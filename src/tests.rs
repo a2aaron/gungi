@@ -9,22 +9,22 @@ mod tests {
 
     // Some example pieces for testing
     // Front Pawn, Back Gold, Player 1
-    static PIECE_1A: Piece = Piece {
+    static FRONT_PAWN_GOLD_1: Piece = Piece {
                     current_side: SideType::Front,
                     front_side: PieceType::Pawn,
                     back_side: PieceType::Gold,
                     belongs_to: &PLAYER_1
                     };
     // Front Bow, Back Silver, Player 1
-    static PIECE_1B: Piece = Piece {
+    static FRONT_BOW_ARROW_1: Piece = Piece {
                     current_side: SideType::Front,
                     front_side: PieceType::Bow,
-                    back_side: PieceType::Silver,
+                    back_side: PieceType::Arrow,
                     belongs_to: &PLAYER_1
                     };
 
     // Front Pawn, Back Bronze, Player 2
-    static PIECE_2A: Piece = Piece {
+    static FRONT_PAWN_BRONZE_2: Piece = Piece {
                     current_side: SideType::Front,
                     front_side: PieceType::Pawn,
                     back_side: PieceType::Bronze,
@@ -32,7 +32,7 @@ mod tests {
                     };
 
     // Front Bow, Back Arrow, Player 2
-    static PIECE_2B: Piece = Piece {
+    static FRONT_BOW_ARROW_2: Piece = Piece {
                     current_side: SideType::Front,
                     front_side: PieceType::Bow,
                     back_side: PieceType::Arrow,
@@ -51,41 +51,39 @@ mod tests {
         let empty_tower = Tower {bottom: None, mid: None, top: None};
         assert!(empty_tower.is_valid());
 
-
-        let single_tower = Tower {bottom: Some(PIECE_1A), mid: None, top: None};
+        let single_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: None, top: None};
         assert!(single_tower.is_valid());
 
-
-        let double_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1B), top: None};
+        let double_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: Some(FRONT_BOW_ARROW_1), top: None};
         assert!(double_tower.is_valid());
 
-        let double_same_type_diff_player_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_2A), top: None};
+        let double_same_type_diff_player_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: Some(FRONT_PAWN_BRONZE_2), top: None};
         assert!(double_same_type_diff_player_tower.is_valid());
 
-        let triple_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1B), top: Some(PIECE_2A)};
+        let triple_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: Some(FRONT_BOW_ARROW_1), top: Some(FRONT_PAWN_BRONZE_2)};
         assert!(triple_tower.is_valid());
     }
 
     #[test]
     fn test_invalid_towers() {
         // Towers can't have any holes in them
-        let only_mid = Tower {bottom: None, mid: Some(PIECE_1A), top: None};
+        let only_mid = Tower {bottom: None, mid: Some(FRONT_PAWN_GOLD_1), top: None};
         assert!(!only_mid.is_valid());
 
-        let only_top = Tower {bottom: None, mid: None, top: Some(PIECE_1A)};
+        let only_top = Tower {bottom: None, mid: None, top: Some(FRONT_PAWN_GOLD_1)};
         assert!(!only_top.is_valid());
 
-        let only_mid_top = Tower {bottom: None, mid: Some(PIECE_1A), top: Some(PIECE_1A)};
+        let only_mid_top = Tower {bottom: None, mid: Some(FRONT_PAWN_GOLD_1), top: Some(FRONT_PAWN_GOLD_1)};
         assert!(!only_mid_top.is_valid());
 
-        let only_bot_top = Tower {bottom: Some(PIECE_1A), mid: None, top: Some(PIECE_1A)};
+        let only_bot_top = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: None, top: Some(FRONT_PAWN_GOLD_1)};
         assert!(!only_bot_top.is_valid());
 
         // Towers can't have two of the same piece in them
-        let double_same_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1A), top: None};
+        let double_same_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: Some(FRONT_PAWN_GOLD_1), top: None};
         assert!(!double_same_tower.is_valid());
 
-        let triple_same_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1A), top: Some(PIECE_2A)};
+        let triple_same_tower = Tower {bottom: Some(FRONT_PAWN_GOLD_1), mid: Some(FRONT_PAWN_GOLD_1), top: Some(FRONT_PAWN_BRONZE_2)};
         assert!(!triple_same_tower.is_valid());       
     }
 
