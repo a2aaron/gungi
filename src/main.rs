@@ -19,6 +19,93 @@ struct Tower<'a> {
     top: Option<Piece<'a>>,
 }
 
+/// A tower is valid as long as no two pieces from the same player
+/// of the same type are in it
+///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
+///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
+fn is_valid(tower: Tower) -> bool {
+    match (tower.bottom, tower.mid, tower.top) {
+        // Empty towers are obviously fine!
+        (None, None, None) => true,
+        // Cases where the tower clearly isn't a tower (ie: bottom pieces missing)
+        (None, _, _) => false,
+        (Some(_), None, Some(_)) => false,
+        // Towers of just one piece can never have two pieces of the same type
+        (Some(_), None, None) => true,
+        (Some(bottom), Some(middle), None) => {
+        // Towers of two mustn't have the pieces be the same type and from same player
+            !same_type_and_player(bottom, middle)
+        }
+        // Same idea for towers of three but it applies to all piece combinations
+        (Some(bottom), Some(middle), Some(top)) => {
+            return !(same_type_and_player(bottom, middle) ||
+                   same_type_and_player(bottom, top)    || 
+                   same_type_and_player(middle, top))
+        }
+    }
+}
+
+#[test]
+fn test_is_valid() {
+    let player1 = Player::new_blank();
+    let player2 = Player::new_blank();
+    let piece1a = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player1
+                    };
+    let piece1b = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Bow,
+                    back_side: PieceType::Silver,
+                    belongs_to: &player1
+                    };
+
+    let piece2a = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player2
+                    };
+    let piece2b = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Bow,
+                    back_side: PieceType::Silver,
+                    belongs_to: &player2
+                    };
+
+    let empty_tower = Tower {bottom: None, mid: None, top: None};
+    assert!(is_valid(empty_tower));
+
+
+    let single_tower = Tower {bottom: Some(piece1a), mid: None, top: None};
+    assert!(is_valid(empty_tower));
+
+
+    let double_tower = Tower {bottom: Some(piece1a), mid: Some(piece1b), top: None};
+    assert!(is_valid(double_tower));
+
+    let double_same_type_diff_player_tower = Tower {bottom: Some(piece1a), mid: Some(piece2a), top: None};
+    assert!(is_valid(double_same_type_diff_player_tower));
+
+    let triple_tower = Tower {bottom: Some(piece1a), mid: Some(piece1b), top: Some(piece2a)};
+    assert!(is_valid(triple_tower));
+
+    // Towers can't have any holes in them
+    let bad_tower_mid = Tower {bottom: None, mid: Some(piece1a), top: None};
+    assert!(!is_valid(bad_tower_mid));
+
+    let bad_tower_top = Tower {bottom: None, mid: None, top: Some(piece1a)};
+    assert!(!is_valid(bad_tower_top));
+
+    let bad_tower_mid_top = Tower {bottom: None, mid: Some(piece1a), top: Some(piece1a)};
+    assert!(!is_valid(bad_tower_mid_top));
+
+    let bad_tower_bot_top = Tower {bottom: Some(piece1a), mid: None, top: Some(piece1a)};
+    assert!(!is_valid(bad_tower_bot_top));
+}
+
 /// Returns true if both pieces have the same PieceType and belong to the same player
 fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
     // Compare that the *pointers* are equal, NOT the contents of the pointers
