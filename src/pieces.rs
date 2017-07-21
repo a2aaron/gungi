@@ -88,7 +88,7 @@ pub struct Piece<'a> {
     pub back_side: PieceType,
     // We use a pointer here because the player owns the piece, not 
     // the other way around.
-    pub belongs_to: &'a Player,
+    pub belongs_to: &'a Player<'a>,
 }
 
 impl<'a> Piece<'a> {
@@ -127,16 +127,16 @@ impl<'a> Piece<'a> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Player {
-    // TODO
+#[derive(Debug, PartialEq, Eq)]
+pub struct Player<'a> {
+    pub hand: Vec<Piece<'a>>,
 }
 
-impl Player {
+impl<'a> Player<'a> {
     // Stub for the Player struct
-    pub fn new_blank() -> Player {
+    pub fn new_blank() -> Player<'a> {
         return Player {
-
+            hand: vec!()
         }
     }
 }
