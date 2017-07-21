@@ -47,6 +47,33 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
            
 }
 
+/// Returns the initial number of pieces a player has at the begining of the game
+/// The number of pieces at the start of the game is as follows:
+/// Commander        x1
+/// CaptainPistol    x2
+/// SamuraiPike      x2
+/// SpyCladestinite  x3
+/// CatapultLance    x1
+/// FortressLance    x1
+/// HiddenDragonKing x1
+/// ProdigyPhoenix   x1
+/// BowArrow         x2
+/// PawnBronze       x7
+/// PawnSilver       x1
+/// PawnGold         x1
+pub fn initial_hand<'a>() -> Vec<PieceCombination> {
+    use PieceCombination::*;
+    // There are probably better ways of doing this but I am lazy and do not care
+    let vec = [Commander,
+               CaptainPistol, CaptainPistol,
+               SamuraiPike, SamuraiPike,
+               SpyCladestinite, SpyCladestinite, SpyCladestinite,
+               CatapultLance, FortressLance, HiddenDragonKing, ProdigyPhoenix,
+               BowArrow, BowArrow,
+               PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnSilver, PawnGold].to_vec();
+    return vec;
+}
+
 /// A piece has two sides, called "Front" and "Back." Pieces initially
 /// start out as their Front side but will flip to Back if they are captured.
 /// The only piece that does not have this is the Commander, which is similar
