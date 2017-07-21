@@ -22,6 +22,40 @@ pub struct Player {
     // TODO
 }
 
+/// Return what side a PieceType is
+/// For example, `get_sidet_type(Spy)` returns `Front`
+fn get_side_type(piece_type: PieceType) -> SideType {
+    use PieceType::*;
+    use SideType::*;
+    match piece_type {
+        Commander => Front,
+        Captain => Front,
+        Samurai => Front,
+        Spy => Front,
+        Catapult => Front,
+        Fortress => Front,
+        HiddenDragon => Front,
+        Prodigy => Front,
+        Bow => Front,
+        Pawn => Front,
+        Pistol => Back,
+        Pike => Back,
+        Clandestinite => Back,
+        Lance => Back,
+        DragonKing => Back,
+        Phoenix => Back,
+        Arrow => Back,
+        Bronze => Back,
+        Silver => Back,
+        Gold => Back,
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SideType {
+    Front, Back
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PieceType {
     // Front Pieces
