@@ -65,7 +65,7 @@ pub struct Piece<'a> {
 }
 
 impl<'a> Piece<'a> {
-    pub fn new(piece_combination: PieceCombination, initial_side: SideType, player: &'a Player) -> Piece<'a> {
+    pub fn new(piece_combination: PieceCombination, player: &'a Player) -> Piece<'a> {
         use pieces::PieceType::*;
         use pieces::PieceCombination::*;
         let (front_side, back_side) = match piece_combination {
@@ -84,7 +84,7 @@ impl<'a> Piece<'a> {
         };
 
         return Piece {
-            current_side: initial_side,
+            current_side: SideType::Front,
             front_side: front_side,
             back_side: back_side,
             belongs_to: player

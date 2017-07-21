@@ -41,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_commander_has_both_front_and_back() {
-        let commander = Piece::new(PieceCombination::Commander, SideType::Front, &PLAYER_1);
+        let commander = Piece::new(PieceCombination::Commander, &PLAYER_1);
         assert_eq!(commander.front_side, PieceType::Commander);
         assert_eq!(commander.back_side, PieceType::Commander);
     }
