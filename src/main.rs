@@ -11,7 +11,7 @@ fn main() {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece<'a> {
     // This should be either front_side or back_side. May change when piece is captured
-    pub current_side: PieceType,
+    pub current_side: SideType,
     front_side: PieceType,
     back_side: PieceType,
     pub belongs_to: &'a Player,
