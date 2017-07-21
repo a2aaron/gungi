@@ -10,16 +10,57 @@ fn main() {
 /// to the king in chess.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece<'a> {
-    // This should be either front_side or back_side. May change when piece is captured
+    // This should be either front_side or back_side.
+    // May change when piece is captured
     pub current_side: SideType,
     front_side: PieceType,
     back_side: PieceType,
+    // We use a pointer here because the player owns the piece, not 
+    // the other way around.
     pub belongs_to: &'a Player,
+}
+
+impl<'a> Piece<'a> {
+    fn current_type(&self) -> PieceType {
+        use SideType::*;
+        match self.current_side {
+            Front => self.front_side,
+            Back => self.back_side
+        }
+    }
+}
+
+#[test]
+fn test_current_type() {
+    let front_piece = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &Player::new_blank()
+                    };
+    assert_eq!(PieceType::Pawn, front_piece.current_type());
+
+    let back_piece = Piece {
+                    current_side: SideType::Back,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &Player::new_blank()
+                    };
+    assert_eq!(PieceType::Gold, back_piece.current_type());
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Player {
     // TODO
+}
+
+impl Player {
+    // Stub for the Player struct
+    fn new_blank() -> Player {
+        return Player {
+
+        }
+    }
 }
 
 /// Return what side a PieceType is
