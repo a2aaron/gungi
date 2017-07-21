@@ -4,6 +4,15 @@ fn main() {
     println!("Hello World!");
 }
 
+/// A tower consists of zero to three pieces. Towers may contain pieces from 
+/// both players. Only the top piece on a tower can move.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+struct Tower<'a> {
+    bottom: Option<Piece<'a>>,
+    mid: Option<Piece<'a>>,
+    top: Option<Piece<'a>>,
+}
+
 /// A piece has two sides, called "Front" and "Back." Pieces initially
 /// start out as their Front side but will flip to Back if they are captured.
 /// The only piece that does not have this is the Commander, which is similar
