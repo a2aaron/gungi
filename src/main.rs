@@ -1,7 +1,13 @@
+//TODO: Move the tests into their own file
+
 // GUNGI RULES
 //https://mmmmalo.tumblr.com/post/74510568781/rules-of-gungi
 fn main() {
     println!("Hello World!");
+
+    let player1 = &Player::new_blank() as *const Player;
+    let player2 = &Player::new_blank() as *const Player;
+    println!("{}", player1 == player2);
 }
 
 /// A tower consists of zero to three pieces. Towers may contain pieces from 
@@ -11,6 +17,71 @@ struct Tower<'a> {
     bottom: Option<Piece<'a>>,
     mid: Option<Piece<'a>>,
     top: Option<Piece<'a>>,
+}
+
+/// Returns true if both pieces have the same PieceType and belong to the same player
+fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
+    // Compare that the *pointers* are equal, NOT the contents of the pointers
+    // This ensures that the pieces definitely belong to the same player and not just
+    // different players that happen to look like each other.
+    let same_player = piece_1.belongs_to as *const Player == piece_2.belongs_to as *const Player;
+    let same_type = piece_1.current_type() == piece_2.current_type();
+    return same_player && same_type
+           
+}
+
+#[test]
+fn test_same_type_and_player() {
+    let player1 = Player::new_blank();
+    let player2 = Player::new_blank();
+
+    // Same piece types but one is on the back (true)
+    let piece_1 = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player1
+                    };
+
+    let piece_2 = Piece {
+                    current_side: SideType::Back,
+                    front_side: PieceType::Silver,
+                    back_side: PieceType::Pawn,
+                    belongs_to: &player1
+                    };
+    assert!(same_type_and_player(piece_1, piece_2));
+
+    // Same pieces but different current sides (false)
+    let piece_3 = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player1
+                    };
+
+    let piece_4 = Piece {
+                    current_side: SideType::Back,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player1
+                    };
+    assert!(!same_type_and_player(piece_3, piece_4));
+
+    // Same piece types but different players (false)
+    let piece_5 = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player1
+                    };
+
+    let piece_6 = Piece {
+                    current_side: SideType::Front,
+                    front_side: PieceType::Pawn,
+                    back_side: PieceType::Gold,
+                    belongs_to: &player2
+                    };
+    assert!(!same_type_and_player(piece_5, piece_6));
 }
 
 /// A piece has two sides, called "Front" and "Back." Pieces initially
