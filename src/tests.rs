@@ -49,37 +49,44 @@ mod tests {
     #[test]
     fn test_valid_towers() {
         let empty_tower = Tower {bottom: None, mid: None, top: None};
-        assert!(is_valid(empty_tower));
+        assert!(empty_tower.is_valid());
 
 
         let single_tower = Tower {bottom: Some(PIECE_1A), mid: None, top: None};
-        assert!(is_valid(empty_tower));
+        assert!(single_tower.is_valid());
 
 
         let double_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1B), top: None};
-        assert!(is_valid(double_tower));
+        assert!(double_tower.is_valid());
 
         let double_same_type_diff_player_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_2A), top: None};
-        assert!(is_valid(double_same_type_diff_player_tower));
+        assert!(double_same_type_diff_player_tower.is_valid());
 
         let triple_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1B), top: Some(PIECE_2A)};
-        assert!(is_valid(triple_tower));
+        assert!(triple_tower.is_valid());
     }
 
     #[test]
     fn test_invalid_towers() {
         // Towers can't have any holes in them
-        let bad_tower_mid = Tower {bottom: None, mid: Some(PIECE_1A), top: None};
-        assert!(!is_valid(bad_tower_mid));
+        let only_mid = Tower {bottom: None, mid: Some(PIECE_1A), top: None};
+        assert!(!only_mid.is_valid());
 
-        let bad_tower_top = Tower {bottom: None, mid: None, top: Some(PIECE_1A)};
-        assert!(!is_valid(bad_tower_top));
+        let only_top = Tower {bottom: None, mid: None, top: Some(PIECE_1A)};
+        assert!(!only_top.is_valid());
 
-        let bad_tower_mid_top = Tower {bottom: None, mid: Some(PIECE_1A), top: Some(PIECE_1A)};
-        assert!(!is_valid(bad_tower_mid_top));
+        let only_mid_top = Tower {bottom: None, mid: Some(PIECE_1A), top: Some(PIECE_1A)};
+        assert!(!only_mid_top.is_valid());
 
-        let bad_tower_bot_top = Tower {bottom: Some(PIECE_1A), mid: None, top: Some(PIECE_1A)};
-        assert!(!is_valid(bad_tower_bot_top));
+        let only_bot_top = Tower {bottom: Some(PIECE_1A), mid: None, top: Some(PIECE_1A)};
+        assert!(!only_bot_top.is_valid());
+
+        // Towers can't have two of the same piece in them
+        let double_same_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1A), top: None};
+        assert!(!double_same_tower.is_valid());
+
+        let triple_same_tower = Tower {bottom: Some(PIECE_1A), mid: Some(PIECE_1A), top: Some(PIECE_2A)};
+        assert!(!triple_same_tower.is_valid());       
     }
 
     #[test]

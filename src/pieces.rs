@@ -7,28 +7,30 @@ pub struct Tower<'a> {
     pub top: Option<Piece<'a>>,
 }
 
-/// A tower is valid as long as no two pieces from the same player
-/// of the same type are in it
-///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
-///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
-pub fn is_valid(tower: Tower) -> bool {
-    match (tower.bottom, tower.mid, tower.top) {
-        // Empty towers are obviously fine!
-        (None, None, None) => true,
-        // Cases where the tower clearly isn't a tower (ie: bottom pieces missing)
-        (None, _, _) => false,
-        (Some(_), None, Some(_)) => false,
-        // Towers of just one piece can never have two pieces of the same type
-        (Some(_), None, None) => true,
-        (Some(bottom), Some(middle), None) => {
-        // Towers of two mustn't have the pieces be the same type and from same player
-            return !same_type_and_player(bottom, middle)
-        }
-        // Same idea for towers of three but it applies to all piece combinations
-        (Some(bottom), Some(middle), Some(top)) => {
-            return !(same_type_and_player(bottom, middle) ||
-                   same_type_and_player(bottom, top)    || 
-                   same_type_and_player(middle, top))
+impl<'a> Tower<'a> {
+    /// A tower is valid as long as no two pieces from the same player
+    /// of the same type are in it
+    ///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
+    ///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
+    pub fn is_valid(&self) -> bool {
+        match (self.bottom, self.mid, self.top) {
+            // Empty towers are obviously fine!
+            (None, None, None) => true,
+            // Cases where the tower clearly isn't a tower (ie: bottom pieces missing)
+            (None, _, _) => false,
+            (Some(_), None, Some(_)) => false,
+            // Towers of just one piece can never have two pieces of the same type
+            (Some(_), None, None) => true,
+            (Some(bottom), Some(middle), None) => {
+            // Towers of two mustn't have the pieces be the same type and from same player
+                return !same_type_and_player(bottom, middle)
+            }
+            // Same idea for towers of three but it applies to all piece combinations
+            (Some(bottom), Some(middle), Some(top)) => {
+                return !(same_type_and_player(bottom, middle) ||
+                       same_type_and_player(bottom, top)    || 
+                       same_type_and_player(middle, top))
+            }
         }
     }
 }
