@@ -48,7 +48,8 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
 /// A piece has two sides, called "Front" and "Back." Pieces initially
 /// start out as their Front side but will flip to Back if they are captured.
 /// The only piece that does not have this is the Commander, which is similar
-/// to the king in chess.
+/// to the king in chess. Note that the Commander piece has the Commander PieceType for the front and back
+/// (this was done because having Option<PieceType> for just a single case would be dumb)
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece<'a> {
     // This should be either front_side or back_side.
@@ -62,6 +63,32 @@ pub struct Piece<'a> {
 }
 
 impl<'a> Piece<'a> {
+    pub fn new(piece_combination: PieceCombination, initial_side: SideType, player: &'a Player) -> Piece<'a> {
+        use pieces::PieceType::*;
+        use pieces::PieceCombination::*;
+        let (front_side, back_side) = match piece_combination {
+            PieceCombination::Commander => (PieceType::Commander, PieceType::Commander),
+            CaptainPistol => (Captain, Pistol),
+            SamuraiPike => (Samurai, Pike),
+            SpyCladestinite => (Spy, Clandestinite),
+            CatapultLance => (Catapult, Lance),
+            FortressLance => (Fortress, Lance),
+            HiddenDragonKing => (HiddenDragon, DragonKing),
+            ProdigyPhoenix => (Prodigy, Phoenix),
+            BowArrow => (Bow, Arrow),
+            PawnBronze => (Pawn, Bronze),
+            PawnSilver => (Pawn, Silver),
+            PawnGold => (Pawn, Bronze),
+        };
+
+        return Piece {
+            current_side: initial_side,
+            front_side: front_side,
+            back_side: back_side,
+            belongs_to: player
+        }
+    }
+
     pub fn current_type(&self) -> PieceType {
         use SideType::*;
         match self.current_side {
@@ -126,14 +153,14 @@ pub enum SideType {
 /// these variants listed are the only combinations of Front and Back
 /// pieces found.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum PieceCombinations {
-    Commander,
+pub enum PieceCombination {
+    Commander, // This is probably not a good name...
     CaptainPistol,
     SamuraiPike,
     SpyCladestinite,
     CatapultLance,
     FortressLance,
-    HiddenDragonDragonKing,
+    HiddenDragonKing,
     ProdigyPhoenix,
     BowArrow,
     PawnBronze,

@@ -40,6 +40,13 @@ mod tests {
                     };
 
     #[test]
+    fn test_commander_has_both_front_and_back() {
+        let commander = Piece::new(PieceCombination::Commander, SideType::Front, &PLAYER_1);
+        assert_eq!(commander.front_side, PieceType::Commander);
+        assert_eq!(commander.back_side, PieceType::Commander);
+    }
+
+    #[test]
     fn test_valid_towers() {
         let empty_tower = Tower {bottom: None, mid: None, top: None};
         assert!(is_valid(empty_tower));
