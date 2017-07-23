@@ -8,6 +8,14 @@ pub struct Tower<'a> {
 }
 
 impl<'a> Tower<'a> {
+    pub fn new(bottom: Option<Piece<'a>>, mid: Option<Piece<'a>>, top: Option<Piece<'a>>) -> Result<Tower<'a>, &'static str> {
+        let tower = Tower {bottom: bottom, mid: mid, top:top };
+        match tower.is_valid() {
+            true => Ok(tower),
+            false => Err("Invalid tower")
+        }
+    }
+
     /// A tower is valid as long as no two pieces from the same player
     /// of the same type are in it
     ///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
@@ -44,7 +52,6 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
     let same_player = eq(piece_1.belongs_to, piece_2.belongs_to);
     let same_type = piece_1.current_type() == piece_2.current_type();
     return same_player && same_type
-           
 }
 
 /// Returns the initial number of pieces a player has at the begining of the game
