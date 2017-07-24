@@ -83,7 +83,8 @@ mod tests {
                         back_side: PieceType::Pawn,
                         belongs_to: &player1
                         };
-        assert!(same_type_and_player(piece_1, piece_2), "Expected the types to be the same even though the current side is different.");
+        assert!(same_type_and_player(piece_1, piece_2),
+            "Expected the types to be the same even though the current sides are different.");
 
         // Same pieces but different current sides (false)
         let piece_3 = Piece {
@@ -99,7 +100,8 @@ mod tests {
                         back_side: PieceType::Gold,
                         belongs_to: &player1
                         };
-        assert!(!same_type_and_player(piece_3, piece_4), "Expected the types to be different even though the sides are the same");
+        assert!(!same_type_and_player(piece_3, piece_4),
+            "Expected the types to be different even though the sides are the same");
 
         // Same piece types but different players (false)
         let piece_5 = Piece {
@@ -115,7 +117,8 @@ mod tests {
                         back_side: PieceType::Gold,
                         belongs_to: &player2
                         };
-        assert!(!same_type_and_player(piece_5, piece_6), "Expected the players to be different even though the sides and type are the same");
+        assert!(!same_type_and_player(piece_5, piece_6),
+            "Expected the players to be different even though the sides and type are the same");
     }
 
     #[test]
