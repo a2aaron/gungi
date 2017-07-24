@@ -7,12 +7,38 @@ pub struct Tower<'a> {
     pub top: Option<Piece<'a>>,
 }
 
+/// A convient enum for refering to the height of a tower.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TowerHeight{ Top, Middle, Bottom, Empty }
+
 impl<'a> Tower<'a> {
     pub fn new(bottom: Option<Piece<'a>>, mid: Option<Piece<'a>>, top: Option<Piece<'a>>) -> Result<Tower<'a>, &'static str> {
         let tower = Tower {bottom: bottom, mid: mid, top:top };
         match tower.is_valid() {
             true => Ok(tower),
             false => Err("Invalid tower")
+        }
+    }
+
+    pub fn get(&self, position: TowerHeight) -> Option<Piece<'a>> {
+        use pieces::TowerHeight::*;
+        match position {
+            Top => self.top,
+            Middle => self.mid,
+            Bottom => self.bottom,
+            Empty => None,
+        }
+    }
+
+    pub fn height(&self) -> TowerHeight {
+        if let Some(_) = self.top {
+            return TowerHeight::Top;
+        } else if let Some(_) = self.mid {
+            return TowerHeight::Middle;
+        } else if let Some(_) = self.bottom {
+            return TowerHeight::Bottom;
+        } else {
+            return TowerHeight::Empty;
         }
     }
 

@@ -136,4 +136,24 @@ mod tests {
                         };
         assert_eq!(PieceType::Gold, back_piece.current_type());
     }
+
+    #[test]
+    fn test_top_most() {
+        let player = Player::new_blank();
+        let piece_1 = Some(Piece::new(PieceCombination::PawnGold, &player));
+        let piece_2 = Some(Piece::new(PieceCombination::BowArrow, &player));
+        let piece_3 = Some(Piece::new(PieceCombination::ProdigyPhoenix, &player));
+
+        let empty = Tower::new(None, None, None).unwrap();
+        assert_eq!(empty.height(), TowerHeight::Empty);
+
+        let bottom = Tower::new(piece_1, None, None).unwrap();
+        assert_eq!(bottom.height(), TowerHeight::Bottom);
+
+        let middle = Tower::new(piece_1, piece_2, None).unwrap();
+        assert_eq!(middle.height(), TowerHeight::Middle);
+
+        let top = Tower::new(piece_1, piece_2, piece_3).unwrap();
+        assert_eq!(top.height(), TowerHeight::Top);
+    }
 }
