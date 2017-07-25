@@ -182,7 +182,9 @@ mod tests {
         assert_eq!(tower.height(), TowerHeight::Empty);  
 
         let mut empty = Tower::new(None, None, None).unwrap();
-        assert!(empty.pop().is_err()); 
+        let mut clone = empty.clone();
+        assert!(empty.pop().is_err());
+        assert_eq!(empty, clone, "Original was {:?} but is now {:?}", clone, empty);
     }
 
     #[test]
@@ -210,6 +212,8 @@ mod tests {
 
         let piece = Piece::new(PieceCombination::Commander, &player);
         let mut full = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+        let mut clone = full.clone();
         assert!(full.drop_piece(piece).is_err());
+        assert_eq!(full, clone, "Original was {:?} but is now {:?}", clone, full);
     }
 }
