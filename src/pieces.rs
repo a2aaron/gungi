@@ -29,46 +29,47 @@ impl<'a> Tower<'a> {
             Empty => None,
         }
     }
-    // Set the given position to the given piece
-    // Panics on invalid tower setting or when trying to set a piece to the Empty height
-    fn set(&mut self, piece: Option<Piece<'a>>, position: TowerHeight) {
+    // Sets the appropriate piece to the one specified
+    // Returns Err when trying to set the Empty position
+    // (does not modify Tower state when this happens).
+    // NOTE: This function does not check if the resulting tower is,
+    // in fact, valid. This may useful if you need to alter a tower arbitrarily.
+    fn set(&mut self, piece: Option<Piece<'a>>, position: TowerHeight) -> Result<Tower, &'static str> {
         use pieces::TowerHeight::*;
         match position {
-            Top => self.top = piece,
-            Middle => self.mid = piece,
-            Bottom => self.bottom = piece,
-            Empty => panic!("Cannot set a piece at TowerHeight::Empty")
-        }
-
-        if !self.is_valid() {
-            panic!("Attempt to set Tower to an invalid state: {:?}", self);
+            Empty => Err("Cannot set a piece at TowerHeight::Empty"),
+            Top => {self.top = piece; return Ok(*self)}
+            Middle => {self.mid = piece; return Ok(*self)},
+            Bottom => {self.bottom = piece; return Ok(*self)},
+            
         }
     }
 
     /// Removes and returns the top most piece from the tower
-    /// Panics if the tower is empty
-    pub fn pop(&mut self) -> Piece<'a> {
+    /// Returns Err if the tower is empty (does not modify Tower
+    /// state when this happense).
+    pub fn pop(&mut self) -> Result<Piece<'a>, &'static str> {
         let height = self.height();
 
         if height == TowerHeight::Empty {
-            panic!("Cannot pop an empty tower!")
+            return Err("Cannot pop an empty tower!");
         }
         // This unwrap is safe because the tower is non-empty
         let top_piece = self.get(height).unwrap();
-        self.set(None, height);
-        return top_piece
+        self.set(None, height).unwrap();
+        return Ok(top_piece)
     }
 
     /// Adds a piece to the top most position on the tower
-    /// Panics if the tower is full
-    pub fn drop_piece(&mut self, piece: Piece<'a>) {
+    /// Returns Err if the tower is full does not modify Tower state when this happens
+    pub fn drop_piece(&mut self, piece: Piece<'a>) -> Result<Tower, &'static str> {
         let height = self.height();
         use pieces::TowerHeight::*;
         match height {
-            Top => panic!("Tower is full."),
+            Top => Err("Tower is full."),
             Middle => self.set(Some(piece), Top),
             Bottom => self.set(Some(piece), Middle),
-            Empty =>self.set(Some(piece), Bottom),
+            Empty => self.set(Some(piece), Bottom),
         }
     }
 

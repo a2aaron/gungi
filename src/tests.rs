@@ -161,13 +161,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
-    fn test_panic_on_empty_pop() {
-        let mut empty = Tower::new(None, None, None).unwrap();
-        empty.pop();
-    }
-
-    #[test]
     fn test_pop() {
         let player = Player::new_blank();
         let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
@@ -177,30 +170,19 @@ mod tests {
         let mut tower = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
 
         let piece_top_pop = tower.pop();
-        assert_eq!(piece_top_pop, piece_top);
+        assert_eq!(piece_top_pop.unwrap(), piece_top);
         assert_eq!(tower.height(), TowerHeight::Middle);
 
         let piece_middle_pop = tower.pop();
-        assert_eq!(piece_middle_pop, piece_middle);
+        assert_eq!(piece_middle_pop.unwrap(), piece_middle);
         assert_eq!(tower.height(), TowerHeight::Bottom);
         
         let piece_bottom_pop = tower.pop();
-        assert_eq!(piece_bottom_pop, piece_bottom);
-        assert_eq!(tower.height(), TowerHeight::Empty);   
-    }
+        assert_eq!(piece_bottom_pop.unwrap(), piece_bottom);
+        assert_eq!(tower.height(), TowerHeight::Empty);  
 
-    #[test]
-    #[should_panic]
-    fn test_panic_on_full_drop() {
-        let player = Player::new_blank();
-        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
-        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
-        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
-
-        let piece = Piece::new(PieceCombination::Commander, &player);
-
-        let mut full = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
-        full.drop_piece(piece);
+        let mut empty = Tower::new(None, None, None).unwrap();
+        assert!(empty.pop().is_err()); 
     }
 
     #[test]
@@ -224,5 +206,10 @@ mod tests {
         tower.drop_piece(piece_top);
         assert_eq!(tower.height(), Top);
         assert_eq!(tower.get(Top), Some(piece_top));
+
+
+        let piece = Piece::new(PieceCombination::Commander, &player);
+        let mut full = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+        assert!(full.drop_piece(piece).is_err());
     }
 }
