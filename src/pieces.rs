@@ -1,3 +1,6 @@
+use std::fmt;
+
+
 /// A tower consists of zero to three pieces. Towers may contain pieces from 
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -202,6 +205,15 @@ impl<'a> Piece<'a> {
     }
 }
 
+impl<'a> fmt::Display for Piece<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.current_side {
+            Front => write!(f, "{}", self.front_side),
+            Back => write!(f, "{}", self.back_side)
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Player<'a> {
     pub hand: Vec<Piece<'a>>,
@@ -297,4 +309,32 @@ pub enum PieceType {
     Bronze,
     Silver,
     Gold,
+}
+
+impl<'a> fmt::Display for PieceType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use pieces::PieceType::*;
+        match *self {
+            Commander => write!(f, "Commander"),
+            Captain => write!(f, "Captain"),
+            Samurai => write!(f, "Samurai"),
+            Spy => write!(f, "Spy"),
+            Catapult => write!(f, "Catapult"),
+            Fortress => write!(f, "Fortress"),
+            HiddenDragon => write!(f, "HiddenDragon"),
+            Prodigy => write!(f, "Prodigy"),
+            Bow => write!(f, "Bow"),
+            Pawn => write!(f, "Pawn"),
+            Pistol => write!(f, "Pistol"),
+            Pike => write!(f, "Pike"),
+            Clandestinite => write!(f, "Clandestinite"),
+            Lance => write!(f, "Lance"),
+            DragonKing => write!(f, "DragonKing"),
+            Phoenix => write!(f, "Phoenix"),
+            Arrow => write!(f, "Arrow"),
+            Bronze => write!(f, "Bronze"),
+            Silver => write!(f, "Silver"),
+            Gold => write!(f, "Gold"),
+        }
+    }
 }
