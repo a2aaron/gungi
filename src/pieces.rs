@@ -59,6 +59,19 @@ impl<'a> Tower<'a> {
         return top_piece
     }
 
+    /// Adds a piece to the top most position on the tower
+    /// Panics if the tower is full
+    pub fn drop_piece(&mut self, piece: Piece<'a>) {
+        let height = self.height();
+        use pieces::TowerHeight::*;
+        match height {
+            Top => panic!("Tower is full."),
+            Middle => self.set(Some(piece), Top),
+            Bottom => self.set(Some(piece), Middle),
+            Empty =>self.set(Some(piece), Bottom),
+        }
+    }
+
     pub fn height(&self) -> TowerHeight {
         if let Some(_) = self.top {
             return TowerHeight::Top;

@@ -141,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    fn test_top_most() {
+    fn test_height() {
         let player = Player::new_blank();
         let piece_1 = Some(Piece::new(PieceCombination::PawnGold, &player));
         let piece_2 = Some(Piece::new(PieceCombination::BowArrow, &player));
@@ -187,5 +187,42 @@ mod tests {
         let piece_bottom_pop = tower.pop();
         assert_eq!(piece_bottom_pop, piece_bottom);
         assert_eq!(tower.height(), TowerHeight::Empty);   
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_panic_on_full_drop() {
+        let player = Player::new_blank();
+        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
+        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
+        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+
+        let piece = Piece::new(PieceCombination::Commander, &player);
+
+        let mut full = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+        full.drop_piece(piece);
+    }
+
+    #[test]
+    fn test_drop() {
+        use pieces::TowerHeight::*;
+        let player = Player::new_blank();
+        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
+        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
+        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+
+        let mut tower: Tower = Tower::new(None, None, None).unwrap();
+
+        tower.drop_piece(piece_bottom); // &mut self
+        assert_eq!(tower.height(), Bottom);
+        assert_eq!(tower.get(Bottom), Some(piece_bottom));
+
+        tower.drop_piece(piece_middle);
+        assert_eq!(tower.height(), Middle);
+        assert_eq!(tower.get(Middle), Some(piece_middle));
+        
+        tower.drop_piece(piece_top);
+        assert_eq!(tower.height(), Top);
+        assert_eq!(tower.get(Top), Some(piece_top));
     }
 }
