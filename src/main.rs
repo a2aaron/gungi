@@ -5,6 +5,7 @@
 
 mod tests;
 mod pieces;
+mod board;
 
 use std::iter::Map;
 use pieces::*;
