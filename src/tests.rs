@@ -159,4 +159,33 @@ mod tests {
         let top = Tower::new(piece_1, piece_2, piece_3).unwrap();
         assert_eq!(top.height(), TowerHeight::Top);
     }
+
+    #[test]
+    #[should_panic]
+    fn test_panic_on_empty_pop() {
+        let mut empty = Tower::new(None, None, None).unwrap();
+        empty.pop();
+    }
+
+    #[test]
+    fn test_pop() {
+        let player = Player::new_blank();
+        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
+        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
+        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+
+        let mut tower = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+
+        let piece_top_pop = tower.pop();
+        assert_eq!(piece_top_pop, piece_top);
+        assert_eq!(tower.height(), TowerHeight::Middle);
+
+        let piece_middle_pop = tower.pop();
+        assert_eq!(piece_middle_pop, piece_middle);
+        assert_eq!(tower.height(), TowerHeight::Bottom);
+        
+        let piece_bottom_pop = tower.pop();
+        assert_eq!(piece_bottom_pop, piece_bottom);
+        assert_eq!(tower.height(), TowerHeight::Empty);   
+    }
 }

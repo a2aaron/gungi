@@ -29,6 +29,35 @@ impl<'a> Tower<'a> {
             Empty => None,
         }
     }
+    // Set the given position to the given piece
+    // Panics on invalid tower setting or when trying to set a piece to the Empty height
+    fn set(&mut self, piece: Option<Piece<'a>>, position: TowerHeight) {
+        use pieces::TowerHeight::*;
+        match position {
+            Top => self.top = piece,
+            Middle => self.mid = piece,
+            Bottom => self.bottom = piece,
+            Empty => panic!("Cannot set a piece at TowerHeight::Empty")
+        }
+
+        if !self.is_valid() {
+            panic!("Attempt to set Tower to an invalid state: {:?}", self);
+        }
+    }
+
+    /// Removes and returns the top most piece from the tower
+    /// Panics if the tower is empty
+    pub fn pop(&mut self) -> Piece<'a> {
+        let height = self.height();
+
+        if height == TowerHeight::Empty {
+            panic!("Cannot pop an empty tower!")
+        }
+        // This unwrap is safe because the tower is non-empty
+        let top_piece = self.get(height).unwrap();
+        self.set(None, height);
+        return top_piece
+    }
 
     pub fn height(&self) -> TowerHeight {
         if let Some(_) = self.top {
