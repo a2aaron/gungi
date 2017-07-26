@@ -1,7 +1,9 @@
-#![allow(dead_code)] // TEMPORARY: this is just to make rust shut up about dead code (It's dead because I haven't written the rest of it!!!)
+#![allow(dead_code)]
+// TEMPORARY: this is just to make rust shut up about dead code
+// (It's dead because I haven't written the rest of it!!!)
 
 // GUNGI RULES
-//https://mmmmalo.tumblr.com/post/74510568781/rules-of-gungi
+// https://mmmmalo.tumblr.com/post/74510568781/rules-of-gungi
 
 mod tests;
 mod pieces;
