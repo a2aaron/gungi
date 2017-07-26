@@ -53,6 +53,17 @@ impl<'a> Tower<'a> {
     /// of the same type are in it
     /// For example, (Your) Pawn, (Your) Pawn is disallowed
     /// but (Your) Pawn, (Enemy) Pawn is fine
+    /// ```
+    /// let player1 = Player::new_blank();
+    /// let player2 = Player::new_blank();
+    /// let pawn_gold = Piece::new(PieceCombination::PawnGold, &player1);
+    /// let pawn_silver_1 = Piece::new(PieceCombination::PawnSilver, &player1);
+    /// let pawn_silver_2 = Piece::new(PieceCombination::PawnSilver, &player2);
+    /// let bad_tower = Tower::Double(pawn_gold, pawn_silver_1);
+    /// let good_tower = Tower::Double(pawn_gold, pawn_silver_2);
+    /// assert!(!bad_tower.is_valid());
+    /// assert!(good_tower.is_valid());
+    /// ```
     pub fn is_valid(&self) -> bool {
         use pieces::Tower::*;
         match *self {
