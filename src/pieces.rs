@@ -1,10 +1,11 @@
 /// A tower consists of zero to three pieces. Towers may contain pieces from 
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Tower<'a> {
-    pub bottom: Option<Piece<'a>>,
-    pub mid: Option<Piece<'a>>,
-    pub top: Option<Piece<'a>>,
+pub enum Tower<'a> {
+    Empty,
+    Single(Piece<'a>),
+    Double(Piece<'a>, Piece<'a>),
+    Triple(Piece<'a>, Piece<'a>, Piece<'a>)
 }
 
 /// A convient enum for refering to the height of a tower.
@@ -12,76 +13,39 @@ pub struct Tower<'a> {
 pub enum TowerHeight{ Top, Middle, Bottom, Empty }
 
 impl<'a> Tower<'a> {
-    pub fn new(bottom: Option<Piece<'a>>, mid: Option<Piece<'a>>, top: Option<Piece<'a>>) -> Result<Tower<'a>, &'static str> {
-        let tower = Tower {bottom: bottom, mid: mid, top:top };
-        match tower.is_valid() {
-            true => Ok(tower),
-            false => Err("Invalid tower")
+    /// Returns the top most piece and a tower that has its top piece removed
+    /// Returns Err if the tower is empty
+    /// This function does not modify the original tower
+    pub fn pop(&self) -> Result<(Tower, Piece<'a>), &'static str> {
+        use pieces::Tower::*;
+        match *self {
+            Empty => Err("Cannot pop an empty tower!"),
+            Single(bottom) => Ok((Empty, bottom)),
+            Double(bottom, middle) => Ok((Single(bottom), middle)),
+            Triple(bottom, middle, top) => Ok((Double(bottom, middle), top))
         }
     }
 
-    pub fn get(&self, position: TowerHeight) -> Option<Piece<'a>> {
-        use pieces::TowerHeight::*;
-        match position {
-            Top => self.top,
-            Middle => self.mid,
-            Bottom => self.bottom,
-            Empty => None,
-        }
-    }
-    // Sets the appropriate piece to the one specified
-    // Returns Err when trying to set the Empty position
-    // (does not modify Tower state when this happens).
-    // NOTE: This function does not check if the resulting tower is,
-    // in fact, valid. This may useful if you need to alter a tower arbitrarily.
-    fn set(&mut self, piece: Option<Piece<'a>>, position: TowerHeight) -> Result<Tower, &'static str> {
-        use pieces::TowerHeight::*;
-        match position {
-            Empty => Err("Cannot set a piece at TowerHeight::Empty"),
-            Top => {self.top = piece; return Ok(*self)}
-            Middle => {self.mid = piece; return Ok(*self)},
-            Bottom => {self.bottom = piece; return Ok(*self)},
-            
-        }
-    }
-
-    /// Removes and returns the top most piece from the tower
-    /// Returns Err if the tower is empty (does not modify Tower
-    /// state when this happense).
-    pub fn pop(&mut self) -> Result<Piece<'a>, &'static str> {
-        let height = self.height();
-
-        if height == TowerHeight::Empty {
-            return Err("Cannot pop an empty tower!");
-        }
-        // This unwrap is safe because the tower is non-empty
-        let top_piece = self.get(height).unwrap();
-        self.set(None, height).unwrap();
-        return Ok(top_piece)
-    }
-
-    /// Adds a piece to the top most position on the tower
+    /// Returns a tower that has a piece added to the top most position on this tower
     /// Returns Err if the tower is full does not modify Tower state when this happens
-    pub fn drop_piece(&mut self, piece: Piece<'a>) -> Result<Tower, &'static str> {
-        let height = self.height();
-        use pieces::TowerHeight::*;
-        match height {
-            Top => Err("Tower is full."),
-            Middle => self.set(Some(piece), Top),
-            Bottom => self.set(Some(piece), Middle),
-            Empty => self.set(Some(piece), Bottom),
+    /// This function does not modify the original tower.
+    pub fn drop_piece<'b>(&'b self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
+        use pieces::Tower::*;
+        match *self {
+            Empty => Ok(Single(piece)),
+            Single(bottom) => Ok(Double(bottom, piece)),
+            Double(bottom, middle) => Ok(Triple(bottom, middle, piece)),
+            Triple(_, _, _) => Err("Tower is full."),
         }
     }
 
     pub fn height(&self) -> TowerHeight {
-        if let Some(_) = self.top {
-            return TowerHeight::Top;
-        } else if let Some(_) = self.mid {
-            return TowerHeight::Middle;
-        } else if let Some(_) = self.bottom {
-            return TowerHeight::Bottom;
-        } else {
-            return TowerHeight::Empty;
+        use pieces::Tower::*;
+        match *self {
+            Empty => TowerHeight::Empty,
+            Single(_) => TowerHeight::Bottom,
+            Double(_, _) => TowerHeight::Middle,
+            Triple(_, _, _) => TowerHeight::Top
         }
     }
 
@@ -90,24 +54,18 @@ impl<'a> Tower<'a> {
     ///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
     ///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
     pub fn is_valid(&self) -> bool {
-        match (self.bottom, self.mid, self.top) {
+        use pieces::Tower::*;
+        match *self {
             // Empty towers are obviously fine!
-            (None, None, None) => true,
-            // Cases where the tower clearly isn't a tower (ie: bottom pieces missing)
-            (None, _, _) => false,
-            (Some(_), None, Some(_)) => false,
+            Empty => true,
             // Towers of just one piece can never have two pieces of the same type
-            (Some(_), None, None) => true,
-            (Some(bottom), Some(middle), None) => {
+            Single(_) => true,
             // Towers of two mustn't have the pieces be the same type and from same player
-                return !same_type_and_player(bottom, middle)
-            }
+            Double(bottom, middle) => !same_type_and_player(bottom, middle),
             // Same idea for towers of three but it applies to all piece combinations
-            (Some(bottom), Some(middle), Some(top)) => {
-                return !(same_type_and_player(bottom, middle) ||
-                       same_type_and_player(bottom, top)    || 
-                       same_type_and_player(middle, top))
-            }
+            Triple(bottom, middle, top) => !(same_type_and_player(bottom, middle) ||
+                                             same_type_and_player(bottom, top)    || 
+                                             same_type_and_player(middle, top))
         }
     }
 }
