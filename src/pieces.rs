@@ -16,10 +16,10 @@ impl<'a> Tower<'a> {
     /// Returns the top most piece and a tower that has its top piece removed
     /// Returns Err if the tower is empty
     /// This function does not modify the original tower
-    pub fn pop(&self) -> Result<(Tower, Piece<'a>), &'static str> {
+    pub fn lift_piece(&self) -> Result<(Tower, Piece<'a>), &'static str> {
         use pieces::Tower::*;
         match *self {
-            Empty => Err("Cannot pop an empty tower!"),
+            Empty => Err("Cannot lift a piece off an empty tower!"),
             Single(bottom) => Ok((Empty, bottom)),
             Double(bottom, middle) => Ok((Single(bottom), middle)),
             Triple(bottom, middle, top) => Ok((Double(bottom, middle), top))

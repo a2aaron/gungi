@@ -148,7 +148,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pop() {
+    fn test_lift_piece() {
         let player = Player::new_blank();
         let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
         let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
@@ -156,20 +156,20 @@ mod tests {
 
         let mut tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
 
-        let (tower, piece_top_pop) = tower.pop().unwrap();
-        assert_eq!(piece_top_pop, piece_top);
+        let (tower, piece_top_lift_piece) = tower.lift_piece().unwrap();
+        assert_eq!(piece_top_lift_piece, piece_top);
         assert_eq!(tower.height(), TowerHeight::Middle);
 
-        let (tower, piece_middle_pop) = tower.pop().unwrap();
-        assert_eq!(piece_middle_pop, piece_middle);
+        let (tower, piece_middle_lift_piece) = tower.lift_piece().unwrap();
+        assert_eq!(piece_middle_lift_piece, piece_middle);
         assert_eq!(tower.height(), TowerHeight::Bottom);
         
-        let (tower, piece_bottom_pop) = tower.pop().unwrap();
-        assert_eq!(piece_bottom_pop, piece_bottom);
+        let (tower, piece_bottom_lift_piece) = tower.lift_piece().unwrap();
+        assert_eq!(piece_bottom_lift_piece, piece_bottom);
         assert_eq!(tower.height(), TowerHeight::Empty);  
 
         let mut empty = Tower::Empty;
-        assert!(empty.pop().is_err());
+        assert!(empty.lift_piece().is_err());
     }
 
     #[test]
