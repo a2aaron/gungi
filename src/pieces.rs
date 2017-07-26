@@ -29,7 +29,7 @@ impl<'a> Tower<'a> {
     /// Returns a tower that has a piece added to the topmost position on this tower
     /// Returns Err if the tower is full does not modify Tower state when this happens
     /// This function does not modify the original tower.
-    pub fn drop_piece<'b>(&'b self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
+    pub fn drop_piece(&self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
         use pieces::Tower::*;
         match *self {
             Empty => Ok(Single(piece)),
