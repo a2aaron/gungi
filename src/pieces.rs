@@ -26,7 +26,7 @@ impl<'a> Tower<'a> {
         }
     }
 
-    /// Returns a tower that has a piece added to the top most position on this tower
+    /// Returns a tower that has a piece added to the topmost position on this tower
     /// Returns Err if the tower is full does not modify Tower state when this happens
     /// This function does not modify the original tower.
     pub fn drop_piece<'b>(&'b self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
@@ -51,8 +51,8 @@ impl<'a> Tower<'a> {
 
     /// A tower is valid as long as no two pieces from the same player
     /// of the same type are in it
-    ///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
-    ///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
+    /// For example, (Your) Pawn, (Your) Pawn is disallowed
+    /// but (Your) Pawn, (Enemy) Pawn is fine
     pub fn is_valid(&self) -> bool {
         use pieces::Tower::*;
         match *self {
