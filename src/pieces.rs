@@ -216,6 +216,15 @@ pub enum Color {
     White,
 }
 
+impl fmt::Display for Color {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Color::Black => write!(f, "Black"),
+            Color::White => write!(f, "White"),
+        }
+    }
+}
+
 impl Player {
     // Stub for the Player struct
     pub fn new_blank() -> Player {
