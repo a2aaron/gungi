@@ -18,19 +18,39 @@ mod tests {
         let bow_arrow = Piece::new(PieceCombination::BowArrow, &player1);
         let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, &player2);
 
-        let empty_tower = Tower {bottom: None, mid: None, top: None};
+        let empty_tower = Tower {
+            bottom: None,
+            mid: None,
+            top: None,
+        };
         assert!(empty_tower.is_valid());
 
-        let single_tower = Tower {bottom: Some(pawn_gold), mid: None, top: None};
+        let single_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: None,
+            top: None,
+        };
         assert!(single_tower.is_valid());
 
-        let double_tower = Tower {bottom: Some(pawn_gold), mid: Some(bow_arrow), top: None};
+        let double_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: Some(bow_arrow),
+            top: None,
+        };
         assert!(double_tower.is_valid());
 
-        let double_same_type_diff_player_tower = Tower {bottom: Some(pawn_gold), mid: Some(pawn_gold_2), top: None};
+        let double_same_type_diff_player_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: Some(pawn_gold_2),
+            top: None,
+        };
         assert!(double_same_type_diff_player_tower.is_valid());
 
-        let triple_tower = Tower {bottom: Some(pawn_gold), mid: Some(bow_arrow), top: Some(pawn_gold_2)};
+        let triple_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: Some(bow_arrow),
+            top: Some(pawn_gold_2),
+        };
         assert!(triple_tower.is_valid());
     }
 
@@ -44,24 +64,48 @@ mod tests {
         let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, &player2);
 
         // Towers can't have any holes in them
-        let only_mid = Tower {bottom: None, mid: Some(pawn_gold), top: None};
+        let only_mid = Tower {
+            bottom: None,
+            mid: Some(pawn_gold),
+            top: None,
+        };
         assert!(!only_mid.is_valid());
 
-        let only_top = Tower {bottom: None, mid: None, top: Some(pawn_gold)};
+        let only_top = Tower {
+            bottom: None,
+            mid: None,
+            top: Some(pawn_gold),
+        };
         assert!(!only_top.is_valid());
 
-        let only_mid_top = Tower {bottom: None, mid: Some(pawn_gold), top: Some(bow_arrow)};
+        let only_mid_top = Tower {
+            bottom: None,
+            mid: Some(pawn_gold),
+            top: Some(bow_arrow),
+        };
         assert!(!only_mid_top.is_valid());
 
-        let only_bot_top = Tower {bottom: Some(pawn_gold), mid: None, top: Some(bow_arrow)};
+        let only_bot_top = Tower {
+            bottom: Some(pawn_gold),
+            mid: None,
+            top: Some(bow_arrow),
+        };
         assert!(!only_bot_top.is_valid());
 
         // Towers can't have two of the same piece in them
-        let double_same_tower = Tower {bottom: Some(pawn_gold), mid: Some(pawn_silver), top: None};
+        let double_same_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: Some(pawn_silver),
+            top: None,
+        };
         assert!(!double_same_tower.is_valid());
 
-        let triple_same_tower = Tower {bottom: Some(pawn_gold), mid: Some(pawn_silver), top: Some(pawn_gold_2)};
-        assert!(!triple_same_tower.is_valid());       
+        let triple_same_tower = Tower {
+            bottom: Some(pawn_gold),
+            mid: Some(pawn_silver),
+            top: Some(pawn_gold_2),
+        };
+        assert!(!triple_same_tower.is_valid());
     }
 
     #[test]
@@ -71,72 +115,72 @@ mod tests {
 
         // Same piece types but one is on the back (true)
         let piece_1 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_2 = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Silver,
-                        back_side: PieceType::Pawn,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Silver,
+            back_side: PieceType::Pawn,
+            belongs_to: &player1,
+        };
         assert!(same_type_and_player(piece_1, piece_2),
-            "Expected the types to be the same even though the current sides are different.");
+                "Expected the types to be the same even though the current sides are different.");
 
         // Same pieces but different current sides (false)
         let piece_3 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_4 = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
         assert!(!same_type_and_player(piece_3, piece_4),
-            "Expected the types to be different even though the sides are the same");
+                "Expected the types to be different even though the sides are the same");
 
         // Same piece types but different players (false)
         let piece_5 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_6 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player2
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player2,
+        };
         assert!(!same_type_and_player(piece_5, piece_6),
-            "Expected the players to be different even though the sides and type are the same");
+                "Expected the players to be different even though the sides and type are the same");
     }
 
     #[test]
     fn test_current_type() {
         let front_piece = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &Player::new_blank()
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &Player::new_blank(),
+        };
         assert_eq!(PieceType::Pawn, front_piece.current_type());
 
         let back_piece = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &Player::new_blank()
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &Player::new_blank(),
+        };
         assert_eq!(PieceType::Gold, back_piece.current_type());
     }
 
@@ -174,7 +218,8 @@ mod tests {
         let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
         let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
 
-        let mut tower = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+        let mut tower = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top))
+            .unwrap();
 
         let piece_top_pop = tower.pop();
         assert_eq!(piece_top_pop, piece_top);
@@ -183,10 +228,10 @@ mod tests {
         let piece_middle_pop = tower.pop();
         assert_eq!(piece_middle_pop, piece_middle);
         assert_eq!(tower.height(), TowerHeight::Bottom);
-        
+
         let piece_bottom_pop = tower.pop();
         assert_eq!(piece_bottom_pop, piece_bottom);
-        assert_eq!(tower.height(), TowerHeight::Empty);   
+        assert_eq!(tower.height(), TowerHeight::Empty);
     }
 
     #[test]
@@ -220,7 +265,7 @@ mod tests {
         tower.drop_piece(piece_middle);
         assert_eq!(tower.height(), Middle);
         assert_eq!(tower.get(Middle), Some(piece_middle));
-        
+
         tower.drop_piece(piece_top);
         assert_eq!(tower.height(), Top);
         assert_eq!(tower.get(Top), Some(piece_top));
