@@ -1,4 +1,4 @@
-/// A tower consists of zero to three pieces. Towers may contain pieces from 
+/// A tower consists of zero to three pieces. Towers may contain pieces from
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Tower<'a> {
@@ -10,7 +10,12 @@ pub enum Tower<'a> {
 
 /// A convient enum for refering to the height of a tower.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TowerHeight{ Top, Middle, Bottom, Empty }
+pub enum TowerHeight {
+    Top,
+    Middle,
+    Bottom,
+    Empty,
+}
 
 impl<'a> Tower<'a> {
     /// Returns the top most piece and a tower that has its top piece removed
@@ -89,7 +94,7 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
     use std::ptr::eq;
     let same_player = eq(piece_1.belongs_to, piece_2.belongs_to);
     let same_type = piece_1.current_type() == piece_2.current_type();
-    return same_player && same_type
+    return same_player && same_type;
 }
 
 /// Returns the initial number of pieces a player has at the begining of the game
@@ -110,20 +115,38 @@ pub fn initial_hand<'a>() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
     let vec = [Commander,
-               CaptainPistol, CaptainPistol,
-               SamuraiPike, SamuraiPike,
-               SpyCladestinite, SpyCladestinite, SpyCladestinite,
-               CatapultLance, FortressLance, HiddenDragonKing, ProdigyPhoenix,
-               BowArrow, BowArrow,
-               PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnBronze, PawnSilver, PawnGold].to_vec();
+               CaptainPistol,
+               CaptainPistol,
+               SamuraiPike,
+               SamuraiPike,
+               SpyCladestinite,
+               SpyCladestinite,
+               SpyCladestinite,
+               CatapultLance,
+               FortressLance,
+               HiddenDragonKing,
+               ProdigyPhoenix,
+               BowArrow,
+               BowArrow,
+               PawnBronze,
+               PawnBronze,
+               PawnBronze,
+               PawnBronze,
+               PawnBronze,
+               PawnBronze,
+               PawnBronze,
+               PawnSilver,
+               PawnGold]
+        .to_vec();
     return vec;
 }
 
 /// A piece has two sides, called "Front" and "Back." Pieces initially
 /// start out as their Front side but will flip to Back if they are captured.
 /// The only piece that does not have this is the Commander, which is similar
-/// to the king in chess. Note that the Commander piece has the Commander PieceType for the front and back
-/// (this was done because having Option<PieceType> for just a single case would be dumb)
+/// to the king in chess. Note that the Commander piece has the Commander PieceType
+// for the front and back. This was done because having Option<PieceType> for just
+// a single case would be dumb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece<'a> {
     // This should be either front_side or back_side.
@@ -131,7 +154,7 @@ pub struct Piece<'a> {
     pub current_side: SideType,
     pub front_side: PieceType,
     pub back_side: PieceType,
-    // We use a pointer here because the player owns the piece, not 
+    // We use a pointer here because the player owns the piece, not
     // the other way around.
     pub belongs_to: &'a Player<'a>,
 }
@@ -159,15 +182,15 @@ impl<'a> Piece<'a> {
             current_side: SideType::Front,
             front_side: front_side,
             back_side: back_side,
-            belongs_to: player
-        }
+            belongs_to: player,
+        };
     }
 
     pub fn current_type(&self) -> PieceType {
         use SideType::*;
         match self.current_side {
             Front => self.front_side,
-            Back => self.back_side
+            Back => self.back_side,
         }
     }
 }
@@ -180,9 +203,7 @@ pub struct Player<'a> {
 impl<'a> Player<'a> {
     // Stub for the Player struct
     pub fn new_blank() -> Player<'a> {
-        return Player {
-            hand: vec!()
-        }
+        return Player { hand: vec![] };
     }
 }
 
@@ -219,10 +240,11 @@ pub fn get_side_type(piece_type: PieceType) -> SideType {
 /// PieceType it wil lact as.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SideType {
-    Front, Back
+    Front,
+    Back,
 }
 
-/// All of the avaliable Gungi pieces 
+/// All of the avaliable Gungi pieces
 /// This enum is useful as a shorthand for creating new Piece structs
 /// these variants listed are the only combinations of Front and Back
 /// pieces found.

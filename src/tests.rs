@@ -58,72 +58,72 @@ mod tests {
 
         // Same piece types but one is on the back (true)
         let piece_1 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_2 = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Silver,
-                        back_side: PieceType::Pawn,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Silver,
+            back_side: PieceType::Pawn,
+            belongs_to: &player1,
+        };
         assert!(same_type_and_player(piece_1, piece_2),
-            "Expected the types to be the same even though the current sides are different.");
+                "Expected the types to be the same even though the current sides are different.");
 
         // Same pieces but different current sides (false)
         let piece_3 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_4 = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
         assert!(!same_type_and_player(piece_3, piece_4),
-            "Expected the types to be different even though the sides are the same");
+                "Expected the types to be different even though the sides are the same");
 
         // Same piece types but different players (false)
         let piece_5 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player1
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player1,
+        };
 
         let piece_6 = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &player2
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &player2,
+        };
         assert!(!same_type_and_player(piece_5, piece_6),
-            "Expected the players to be different even though the sides and type are the same");
+                "Expected the players to be different even though the sides and type are the same");
     }
 
     #[test]
     fn test_current_type() {
         let front_piece = Piece {
-                        current_side: SideType::Front,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &Player::new_blank()
-                        };
+            current_side: SideType::Front,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &Player::new_blank(),
+        };
         assert_eq!(PieceType::Pawn, front_piece.current_type());
 
         let back_piece = Piece {
-                        current_side: SideType::Back,
-                        front_side: PieceType::Pawn,
-                        back_side: PieceType::Gold,
-                        belongs_to: &Player::new_blank()
-                        };
+            current_side: SideType::Back,
+            front_side: PieceType::Pawn,
+            back_side: PieceType::Gold,
+            belongs_to: &Player::new_blank(),
+        };
         assert_eq!(PieceType::Gold, back_piece.current_type());
     }
 
