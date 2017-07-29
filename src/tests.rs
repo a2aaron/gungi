@@ -4,19 +4,18 @@ mod tests {
 
     #[test]
     fn test_commander_has_both_front_and_back() {
-        let player = Player::new_blank();
-        let commander = Piece::new(PieceCombination::Commander, &player);
+        let commander = Piece::new(PieceCombination::Commander, Color::Black);
         assert_eq!(commander.front_side, PieceType::Commander);
         assert_eq!(commander.back_side, PieceType::Commander);
     }
 
     #[test]
     fn test_valid_towers() {
-        let player1 = Player::new_blank();
-        let player2 = Player::new_blank();
-        let pawn_gold = Piece::new(PieceCombination::PawnGold, &player1);
-        let bow_arrow = Piece::new(PieceCombination::BowArrow, &player1);
-        let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, &player2);
+        let black = Color::Black;
+        let white = Color::White;
+        let pawn_gold = Piece::new(PieceCombination::PawnGold, black);
+        let bow_arrow = Piece::new(PieceCombination::BowArrow, black);
+        let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, white);
 
         let empty_tower = Tower::Empty;
         assert!(empty_tower.is_valid());
@@ -36,12 +35,12 @@ mod tests {
 
     #[test]
     fn test_invalid_towers() {
-        let player1 = Player::new_blank();
-        let player2 = Player::new_blank();
-        let pawn_gold = Piece::new(PieceCombination::PawnGold, &player1);
-        let pawn_silver = Piece::new(PieceCombination::PawnSilver, &player1);
-        let bow_arrow = Piece::new(PieceCombination::BowArrow, &player1);
-        let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, &player2);
+        let black = Color::Black;
+        let white = Color::White;
+        let pawn_gold = Piece::new(PieceCombination::PawnGold, black);
+        let pawn_silver = Piece::new(PieceCombination::PawnSilver, black);
+        let bow_arrow = Piece::new(PieceCombination::BowArrow, black);
+        let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, white);
 
         // Towers can't have two of the same piece in them
         let double_same_tower = Tower::Double(pawn_gold, pawn_silver);
@@ -53,22 +52,22 @@ mod tests {
 
     #[test]
     fn test_piece_eq() {
-        let player1 = Player::new_blank();
-        let player2 = Player::new_blank();
+        let black = Color::Black;
+        let white = Color::White;
 
         // Same piece types but one is on the back (true)
         let piece_1 = Piece {
             current_side: SideType::Front,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &player1,
+            color: black,
         };
 
         let piece_2 = Piece {
             current_side: SideType::Back,
             front_side: PieceType::Silver,
             back_side: PieceType::Pawn,
-            belongs_to: &player1,
+            color: black,
         };
         assert!(
             piece_1 == piece_2,
@@ -80,14 +79,14 @@ mod tests {
             current_side: SideType::Front,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &player1,
+            color: black,
         };
 
         let piece_4 = Piece {
             current_side: SideType::Back,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &player1,
+            color: black,
         };
         assert!(
             piece_3 != piece_4,
@@ -99,14 +98,14 @@ mod tests {
             current_side: SideType::Front,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &player1,
+            color: black,
         };
 
         let piece_6 = Piece {
             current_side: SideType::Front,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &player2,
+            color: white,
         };
         assert!(
             piece_5 != piece_6,
@@ -120,7 +119,7 @@ mod tests {
             current_side: SideType::Front,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &Player::new_blank(),
+            color: Color::Black,
         };
         assert_eq!(PieceType::Pawn, front_piece.current_type());
 
@@ -128,17 +127,17 @@ mod tests {
             current_side: SideType::Back,
             front_side: PieceType::Pawn,
             back_side: PieceType::Gold,
-            belongs_to: &Player::new_blank(),
+            color: Color::Black,
         };
         assert_eq!(PieceType::Gold, back_piece.current_type());
     }
 
     #[test]
     fn test_height() {
-        let player = Player::new_blank();
-        let piece_1 = Piece::new(PieceCombination::PawnGold, &player);
-        let piece_2 = Piece::new(PieceCombination::BowArrow, &player);
-        let piece_3 = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+        let player = Color::Black;
+        let piece_1 = Piece::new(PieceCombination::PawnGold, player);
+        let piece_2 = Piece::new(PieceCombination::BowArrow, player);
+        let piece_3 = Piece::new(PieceCombination::ProdigyPhoenix, player);
 
         let empty = Tower::Empty;
         assert_eq!(empty.height(), TowerHeight::Empty);
@@ -155,10 +154,10 @@ mod tests {
 
     #[test]
     fn test_lift_piece() {
-        let player = Player::new_blank();
-        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
-        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
-        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+        let player = Color::Black;
+        let piece_bottom = Piece::new(PieceCombination::PawnGold, player);
+        let piece_middle = Piece::new(PieceCombination::BowArrow, player);
+        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, player);
 
         let mut tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
 
@@ -181,10 +180,10 @@ mod tests {
     #[test]
     fn test_drop() {
         use pieces::TowerHeight::*;
-        let player = Player::new_blank();
-        let piece_bottom = Piece::new(PieceCombination::PawnGold, &player);
-        let piece_middle = Piece::new(PieceCombination::BowArrow, &player);
-        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, &player);
+        let player = Color::Black;
+        let piece_bottom = Piece::new(PieceCombination::PawnGold, player);
+        let piece_middle = Piece::new(PieceCombination::BowArrow, player);
+        let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, player);
 
         let mut tower = Tower::Empty;
 
@@ -200,7 +199,7 @@ mod tests {
         assert_eq!(tower.height(), Top);
         assert_eq!(tower, Tower::Triple(piece_bottom, piece_middle, piece_top));
 
-        let piece = Piece::new(PieceCombination::Commander, &player);
+        let piece = Piece::new(PieceCombination::Commander, player);
         let mut full = Tower::Triple(piece_bottom, piece_middle, piece_top);
         assert!(full.drop_piece(piece).is_err());
     }
