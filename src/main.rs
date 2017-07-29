@@ -14,10 +14,11 @@ fn main() {
     let player = Color::Black;
     let piece_bottom = Piece::new(PieceCombination::PawnBronze, player);
     let piece_middle = Piece::new(PieceCombination::BowArrow, player);
-    let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, player);
+    let piece_top = Piece::new(PieceCombination::PawnSilver, player);
 
-    // let mut tower = Tower::new(Some(piece_bottom), Some(piece_middle), Some(piece_top)).unwrap();
+    let tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
     println!("{}", piece_top);
     println!("{}", piece_middle);
     println!("{}", piece_bottom);
+    println!("{}", tower);
 }

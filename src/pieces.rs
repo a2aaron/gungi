@@ -87,6 +87,18 @@ impl Tower {
     }
 }
 
+impl fmt::Display for Tower {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use pieces::Tower::*;
+        match *self {
+            Empty => write!(f, "[]"),
+            Single(piece) => write!(f, "[{}]", piece),
+            Double(bottom, mid) => write!(f, "[{}, {}]", bottom, mid),
+            Triple(bottom, mid, top) => write!(f, "[{}, {}, {}]", bottom, mid, top),
+        }
+    }
+}
+
 /// Returns the initial number of pieces a player has at the begining of the game
 /// The number of pieces at the start of the game is as follows:
 /// Commander        x1
