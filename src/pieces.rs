@@ -5,7 +5,7 @@ pub enum Tower<'a> {
     Empty,
     Single(Piece<'a>),
     Double(Piece<'a>, Piece<'a>),
-    Triple(Piece<'a>, Piece<'a>, Piece<'a>)
+    Triple(Piece<'a>, Piece<'a>, Piece<'a>),
 }
 
 /// A convient enum for refering to the height of a tower.
@@ -27,7 +27,7 @@ impl<'a> Tower<'a> {
             Empty => Err("Cannot lift a piece off an empty tower!"),
             Single(bottom) => Ok((Empty, bottom)),
             Double(bottom, middle) => Ok((Single(bottom), middle)),
-            Triple(bottom, middle, top) => Ok((Double(bottom, middle), top))
+            Triple(bottom, middle, top) => Ok((Double(bottom, middle), top)),
         }
     }
 
@@ -50,7 +50,7 @@ impl<'a> Tower<'a> {
             Empty => TowerHeight::Empty,
             Single(_) => TowerHeight::Bottom,
             Double(_, _) => TowerHeight::Middle,
-            Triple(_, _, _) => TowerHeight::Top
+            Triple(_, _, _) => TowerHeight::Top,
         }
     }
 
@@ -59,8 +59,8 @@ impl<'a> Tower<'a> {
     /// For example, (Your) Pawn, (Your) Pawn is disallowed
     /// but (Your) Pawn, (Enemy) Pawn is fine
     /// ```
-    /// let player1 = Player::new_blank();
-    /// let player2 = Player::new_blank();
+    /// # let player1 = Player::new_blank();
+    /// # let player2 = Player::new_blank();
     /// let pawn_gold = Piece::new(PieceCombination::PawnGold, &player1);
     /// let pawn_silver_1 = Piece::new(PieceCombination::PawnSilver, &player1);
     /// let pawn_silver_2 = Piece::new(PieceCombination::PawnSilver, &player2);
@@ -79,9 +79,10 @@ impl<'a> Tower<'a> {
             // Towers of two mustn't have the pieces be the same type and from same player
             Double(bottom, middle) => !same_type_and_player(bottom, middle),
             // Same idea for towers of three but it applies to all piece combinations
-            Triple(bottom, middle, top) => !(same_type_and_player(bottom, middle) ||
-                                             same_type_and_player(bottom, top)    || 
-                                             same_type_and_player(middle, top))
+            Triple(bottom, middle, top) => {
+                !(same_type_and_player(bottom, middle) || same_type_and_player(bottom, top) ||
+                      same_type_and_player(middle, top))
+            }
         }
     }
 }
@@ -114,30 +115,31 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
 pub fn initial_hand<'a>() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
-    let vec = [Commander,
-               CaptainPistol,
-               CaptainPistol,
-               SamuraiPike,
-               SamuraiPike,
-               SpyCladestinite,
-               SpyCladestinite,
-               SpyCladestinite,
-               CatapultLance,
-               FortressLance,
-               HiddenDragonKing,
-               ProdigyPhoenix,
-               BowArrow,
-               BowArrow,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnSilver,
-               PawnGold]
-        .to_vec();
+    let vec = [
+        Commander,
+        CaptainPistol,
+        CaptainPistol,
+        SamuraiPike,
+        SamuraiPike,
+        SpyCladestinite,
+        SpyCladestinite,
+        SpyCladestinite,
+        CatapultLance,
+        FortressLance,
+        HiddenDragonKing,
+        ProdigyPhoenix,
+        BowArrow,
+        BowArrow,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnSilver,
+        PawnGold,
+    ].to_vec();
     return vec;
 }
 

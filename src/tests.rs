@@ -48,7 +48,7 @@ mod tests {
         assert!(!double_same_tower.is_valid());
 
         let triple_same_tower = Tower::Triple(pawn_gold, pawn_silver, pawn_gold_2);
-        assert!(!triple_same_tower.is_valid());       
+        assert!(!triple_same_tower.is_valid());
     }
 
     #[test]
@@ -70,8 +70,10 @@ mod tests {
             back_side: PieceType::Pawn,
             belongs_to: &player1,
         };
-        assert!(same_type_and_player(piece_1, piece_2),
-                "Expected the types to be the same even though the current sides are different.");
+        assert!(
+            same_type_and_player(piece_1, piece_2),
+            "Expected the types to be the same even though the current sides are different."
+        );
 
         // Same pieces but different current sides (false)
         let piece_3 = Piece {
@@ -87,8 +89,10 @@ mod tests {
             back_side: PieceType::Gold,
             belongs_to: &player1,
         };
-        assert!(!same_type_and_player(piece_3, piece_4),
-                "Expected the types to be different even though the sides are the same");
+        assert!(
+            !same_type_and_player(piece_3, piece_4),
+            "Expected the types to be different even though the sides are the same"
+        );
 
         // Same piece types but different players (false)
         let piece_5 = Piece {
@@ -104,8 +108,10 @@ mod tests {
             back_side: PieceType::Gold,
             belongs_to: &player2,
         };
-        assert!(!same_type_and_player(piece_5, piece_6),
-                "Expected the players to be different even though the sides and type are the same");
+        assert!(
+            !same_type_and_player(piece_5, piece_6),
+            "Expected the players to be different even though the sides and type are the same"
+        );
     }
 
     #[test]
@@ -163,10 +169,10 @@ mod tests {
         let (tower, piece_middle_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_middle_lift_piece, piece_middle);
         assert_eq!(tower.height(), TowerHeight::Bottom);
-        
+
         let (tower, piece_bottom_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_bottom_lift_piece, piece_bottom);
-        assert_eq!(tower.height(), TowerHeight::Empty);  
+        assert_eq!(tower.height(), TowerHeight::Empty);
 
         let mut empty = Tower::Empty;
         assert!(empty.lift_piece().is_err());
@@ -189,7 +195,7 @@ mod tests {
         tower = tower.drop_piece(piece_middle).unwrap();
         assert_eq!(tower.height(), Middle);
         assert_eq!(tower, Tower::Double(piece_bottom, piece_middle));
-        
+
         tower = tower.drop_piece(piece_top).unwrap();
         assert_eq!(tower.height(), Top);
         assert_eq!(tower, Tower::Triple(piece_bottom, piece_middle, piece_top));
