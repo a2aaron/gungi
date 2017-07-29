@@ -163,7 +163,7 @@ impl<'a> Piece<'a> {
             BowArrow => (Bow, Arrow),
             PawnBronze => (Pawn, Bronze),
             PawnSilver => (Pawn, Silver),
-            PawnGold => (Pawn, Bronze),
+            PawnGold => (Pawn, Gold),
         };
 
         return Piece {
