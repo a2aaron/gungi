@@ -52,7 +52,7 @@ mod tests {
     }
 
     #[test]
-    fn test_same_type_and_player() {
+    fn test_piece_eq() {
         let player1 = Player::new_blank();
         let player2 = Player::new_blank();
 
@@ -71,7 +71,7 @@ mod tests {
             belongs_to: &player1,
         };
         assert!(
-            same_type_and_player(piece_1, piece_2),
+            piece_1 == piece_2,
             "Expected the types to be the same even though the current sides are different."
         );
 
@@ -90,7 +90,7 @@ mod tests {
             belongs_to: &player1,
         };
         assert!(
-            !same_type_and_player(piece_3, piece_4),
+            piece_3 != piece_4,
             "Expected the types to be different even though the sides are the same"
         );
 
@@ -109,7 +109,7 @@ mod tests {
             belongs_to: &player2,
         };
         assert!(
-            !same_type_and_player(piece_5, piece_6),
+            piece_5 != piece_6,
             "Expected the players to be different even though the sides and type are the same"
         );
     }

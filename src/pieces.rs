@@ -77,25 +77,11 @@ impl<'a> Tower<'a> {
             // Towers of just one piece can never have two pieces of the same type
             Single(_) => true,
             // Towers of two mustn't have the pieces be the same type and from same player
-            Double(bottom, middle) => !same_type_and_player(bottom, middle),
+            Double(bottom, middle) => bottom != middle,
             // Same idea for towers of three but it applies to all piece combinations
-            Triple(bottom, middle, top) => {
-                !(same_type_and_player(bottom, middle) || same_type_and_player(bottom, top) ||
-                      same_type_and_player(middle, top))
-            }
+            Triple(bottom, middle, top) => !(bottom == middle || bottom == top || middle == top),
         }
     }
-}
-
-/// Returns true if both pieces have the same PieceType and belong to the same player.
-pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
-    // Compare that the *pointers* are equal, NOT the contents of the pointers
-    // This ensures that the pieces definitely belong to the same player and not just
-    // different players that happen to look like each other.
-    use std::ptr::eq;
-    let same_player = eq(piece_1.belongs_to, piece_2.belongs_to);
-    let same_type = piece_1.current_type() == piece_2.current_type();
-    return same_player && same_type;
 }
 
 /// Returns the initial number of pieces a player has at the begining of the game
@@ -149,7 +135,7 @@ pub fn initial_hand<'a>() -> Vec<PieceCombination> {
 /// to the king in chess. Note that the Commander piece has the Commander PieceType
 // for the front and back. This was done because having Option<PieceType> for just
 // a single case would be dumb.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Piece<'a> {
     // This should be either front_side or back_side.
     // May change when piece is captured
@@ -196,6 +182,20 @@ impl<'a> Piece<'a> {
         }
     }
 }
+
+impl<'a> PartialEq for Piece<'a> {
+    fn eq(&self, other: &Piece) -> bool {
+        // Compare that the *pointers* are equal, NOT the contents of the pointers
+        // This ensures that the pieces definitely belong to the same player and not just
+        // different players that happen to look like each other.
+        use std::ptr;
+        let same_player = ptr::eq(self.belongs_to, other.belongs_to);
+        let same_type = self.current_type() == other.current_type();
+        return same_player && same_type;
+    }
+}
+
+impl<'a> Eq for Piece<'a> {}
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Player<'a> {
