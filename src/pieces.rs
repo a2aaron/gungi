@@ -194,11 +194,11 @@ impl PartialEq for Piece {
 
 impl Eq for Piece {}
 
-impl<'a> fmt::Display for Piece<'a> {
+impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self.current_side {
-            Front => write!(f, "{}", self.front_side),
-            Back => write!(f, "{}", self.back_side),
+            SideType::Front => write!(f, "{} {} ({})", self.color, self.front_side, self.back_side),
+            SideType::Back => write!(f, "{} {} ({})", self.color, self.back_side, self.front_side),
         }
     }
 }
