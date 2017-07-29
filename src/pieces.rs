@@ -98,7 +98,7 @@ impl Tower {
 /// PawnBronze       x7
 /// PawnSilver       x1
 /// PawnGold         x1
-pub fn initial_hand<'a>() -> Vec<PieceCombination> {
+pub fn initial_hand() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
     let vec = [
@@ -189,7 +189,7 @@ impl PartialEq for Piece {
     }
 }
 
-impl<'a> Eq for Piece {}
+impl Eq for Piece {}
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Player {
@@ -204,7 +204,7 @@ pub enum Color {
     White,
 }
 
-impl<'a> Player {
+impl Player {
     // Stub for the Player struct
     pub fn new_blank() -> Player {
         return Player { hand: vec![] };
