@@ -39,7 +39,6 @@ mod tests {
         let white = Color::White;
         let pawn_gold = Piece::new(PieceCombination::PawnGold, black);
         let pawn_silver = Piece::new(PieceCombination::PawnSilver, black);
-        let bow_arrow = Piece::new(PieceCombination::BowArrow, black);
         let pawn_gold_2 = Piece::new(PieceCombination::PawnGold, white);
 
         // Towers can't have two of the same piece in them
@@ -159,7 +158,7 @@ mod tests {
         let piece_middle = Piece::new(PieceCombination::BowArrow, player);
         let piece_top = Piece::new(PieceCombination::ProdigyPhoenix, player);
 
-        let mut tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
+        let tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
 
         let (tower, piece_top_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_top_lift_piece, piece_top);
@@ -173,7 +172,7 @@ mod tests {
         assert_eq!(piece_bottom_lift_piece, piece_bottom);
         assert_eq!(tower.height(), TowerHeight::Empty);
 
-        let mut empty = Tower::Empty;
+        let empty = Tower::Empty;
         assert!(empty.lift_piece().is_err());
     }
 
@@ -200,7 +199,7 @@ mod tests {
         assert_eq!(tower, Tower::Triple(piece_bottom, piece_middle, piece_top));
 
         let piece = Piece::new(PieceCombination::Commander, player);
-        let mut full = Tower::Triple(piece_bottom, piece_middle, piece_top);
+        let full = Tower::Triple(piece_bottom, piece_middle, piece_top);
         assert!(full.drop_piece(piece).is_err());
     }
 }
