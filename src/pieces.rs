@@ -1,10 +1,11 @@
 /// A tower consists of zero to three pieces. Towers may contain pieces from
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct Tower<'a> {
-    pub bottom: Option<Piece<'a>>,
-    pub mid: Option<Piece<'a>>,
-    pub top: Option<Piece<'a>>,
+pub enum Tower<'a> {
+    Empty,
+    Single(Piece<'a>),
+    Double(Piece<'a>, Piece<'a>),
+    Triple(Piece<'a>, Piece<'a>, Piece<'a>),
 }
 
 /// A convient enum for refering to the height of a tower.
@@ -17,121 +18,70 @@ pub enum TowerHeight {
 }
 
 impl<'a> Tower<'a> {
-    pub fn new(bottom: Option<Piece<'a>>,
-               mid: Option<Piece<'a>>,
-               top: Option<Piece<'a>>)
-               -> Result<Tower<'a>, &'static str> {
-        let tower = Tower {
-            bottom: bottom,
-            mid: mid,
-            top: top,
-        };
-        match tower.is_valid() {
-            true => Ok(tower),
-            false => Err("Invalid tower"),
+    /// Returns the top most piece and a tower that has its top piece removed
+    /// Returns Err if the tower is empty
+    /// This function does not modify the original tower
+    pub fn lift_piece(&self) -> Result<(Tower, Piece<'a>), &'static str> {
+        use pieces::Tower::*;
+        match *self {
+            Empty => Err("Cannot lift a piece off an empty tower!"),
+            Single(bottom) => Ok((Empty, bottom)),
+            Double(bottom, middle) => Ok((Single(bottom), middle)),
+            Triple(bottom, middle, top) => Ok((Double(bottom, middle), top)),
         }
     }
 
-    pub fn get(&self, position: TowerHeight) -> Option<Piece<'a>> {
-        use pieces::TowerHeight::*;
-        match position {
-            Top => self.top,
-            Middle => self.mid,
-            Bottom => self.bottom,
-            Empty => None,
-        }
-    }
-    // Set the given position to the given piece
-    // Panics on invalid tower setting or when trying to set a piece to the Empty height
-    fn set(&mut self, piece: Option<Piece<'a>>, position: TowerHeight) {
-        use pieces::TowerHeight::*;
-        match position {
-            Top => self.top = piece,
-            Middle => self.mid = piece,
-            Bottom => self.bottom = piece,
-            Empty => panic!("Cannot set a piece at TowerHeight::Empty"),
-        }
-
-        if !self.is_valid() {
-            panic!("Attempt to set Tower to an invalid state: {:?}", self);
-        }
-    }
-
-    /// Removes and returns the top most piece from the tower
-    /// Panics if the tower is empty
-    pub fn pop(&mut self) -> Piece<'a> {
-        let height = self.height();
-
-        if height == TowerHeight::Empty {
-            panic!("Cannot pop an empty tower!")
-        }
-        // This unwrap is safe because the tower is non-empty
-        let top_piece = self.get(height).unwrap();
-        self.set(None, height);
-        return top_piece;
-    }
-
-    /// Adds a piece to the top most position on the tower
-    /// Panics if the tower is full
-    pub fn drop_piece(&mut self, piece: Piece<'a>) {
-        let height = self.height();
-        use pieces::TowerHeight::*;
-        match height {
-            Top => panic!("Tower is full."),
-            Middle => self.set(Some(piece), Top),
-            Bottom => self.set(Some(piece), Middle),
-            Empty => self.set(Some(piece), Bottom),
+    /// Returns a tower that has a piece added to the topmost position on this tower
+    /// Returns Err if the tower is full does not modify Tower state when this happens
+    /// This function does not modify the original tower.
+    pub fn drop_piece(&self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
+        use pieces::Tower::*;
+        match *self {
+            Empty => Ok(Single(piece)),
+            Single(bottom) => Ok(Double(bottom, piece)),
+            Double(bottom, middle) => Ok(Triple(bottom, middle, piece)),
+            Triple(_, _, _) => Err("Tower is full."),
         }
     }
 
     pub fn height(&self) -> TowerHeight {
-        if let Some(_) = self.top {
-            return TowerHeight::Top;
-        } else if let Some(_) = self.mid {
-            return TowerHeight::Middle;
-        } else if let Some(_) = self.bottom {
-            return TowerHeight::Bottom;
-        } else {
-            return TowerHeight::Empty;
+        use pieces::Tower::*;
+        match *self {
+            Empty => TowerHeight::Empty,
+            Single(_) => TowerHeight::Bottom,
+            Double(_, _) => TowerHeight::Middle,
+            Triple(_, _, _) => TowerHeight::Top,
         }
     }
 
     /// A tower is valid as long as no two pieces from the same player
     /// of the same type are in it
-    ///    For example, (Your) Pawn, (Your) Gold, (Your) Gold is disallowed
-    ///    but (Your) Pawn, (Your) Gold, (Enemy) Gold is fine
+    /// For example, (Your) Pawn, (Your) Pawn is disallowed
+    /// but (Your) Pawn, (Enemy) Pawn is fine
+    /// ```
+    /// # let player1 = Player::new_blank();
+    /// # let player2 = Player::new_blank();
+    /// let pawn_gold = Piece::new(PieceCombination::PawnGold, &player1);
+    /// let pawn_silver_1 = Piece::new(PieceCombination::PawnSilver, &player1);
+    /// let pawn_silver_2 = Piece::new(PieceCombination::PawnSilver, &player2);
+    /// let bad_tower = Tower::Double(pawn_gold, pawn_silver_1);
+    /// let good_tower = Tower::Double(pawn_gold, pawn_silver_2);
+    /// assert!(!bad_tower.is_valid());
+    /// assert!(good_tower.is_valid());
+    /// ```
     pub fn is_valid(&self) -> bool {
-        match (self.bottom, self.mid, self.top) {
+        use pieces::Tower::*;
+        match *self {
             // Empty towers are obviously fine!
-            (None, None, None) => true,
-            // Cases where the tower clearly isn't a tower (ie: bottom pieces missing)
-            (None, _, _) => false,
-            (Some(_), None, Some(_)) => false,
+            Empty => true,
             // Towers of just one piece can never have two pieces of the same type
-            (Some(_), None, None) => true,
-            (Some(bottom), Some(middle), None) => {
-                // Towers of two mustn't have the pieces be the same type and from same player
-                return !same_type_and_player(bottom, middle);
-            }
+            Single(_) => true,
+            // Towers of two mustn't have the pieces be the same type and from same player
+            Double(bottom, middle) => bottom != middle,
             // Same idea for towers of three but it applies to all piece combinations
-            (Some(bottom), Some(middle), Some(top)) => {
-                return !(same_type_and_player(bottom, middle) ||
-                         same_type_and_player(bottom, top) ||
-                         same_type_and_player(middle, top))
-            }
+            Triple(bottom, middle, top) => !(bottom == middle || bottom == top || middle == top),
         }
     }
-}
-
-/// Returns true if both pieces have the same PieceType and belong to the same player.
-pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
-    // Compare that the *pointers* are equal, NOT the contents of the pointers
-    // This ensures that the pieces definitely belong to the same player and not just
-    // different players that happen to look like each other.
-    use std::ptr::eq;
-    let same_player = eq(piece_1.belongs_to, piece_2.belongs_to);
-    let same_type = piece_1.current_type() == piece_2.current_type();
-    return same_player && same_type;
 }
 
 /// Returns the initial number of pieces a player has at the begining of the game
@@ -151,30 +101,31 @@ pub fn same_type_and_player(piece_1: Piece, piece_2: Piece) -> bool {
 pub fn initial_hand<'a>() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
-    let vec = [Commander,
-               CaptainPistol,
-               CaptainPistol,
-               SamuraiPike,
-               SamuraiPike,
-               SpyCladestinite,
-               SpyCladestinite,
-               SpyCladestinite,
-               CatapultLance,
-               FortressLance,
-               HiddenDragonKing,
-               ProdigyPhoenix,
-               BowArrow,
-               BowArrow,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnBronze,
-               PawnSilver,
-               PawnGold]
-        .to_vec();
+    let vec = [
+        Commander,
+        CaptainPistol,
+        CaptainPistol,
+        SamuraiPike,
+        SamuraiPike,
+        SpyCladestinite,
+        SpyCladestinite,
+        SpyCladestinite,
+        CatapultLance,
+        FortressLance,
+        HiddenDragonKing,
+        ProdigyPhoenix,
+        BowArrow,
+        BowArrow,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnBronze,
+        PawnSilver,
+        PawnGold,
+    ].to_vec();
     return vec;
 }
 
@@ -184,7 +135,7 @@ pub fn initial_hand<'a>() -> Vec<PieceCombination> {
 /// to the king in chess. Note that the Commander piece has the Commander PieceType
 // for the front and back. This was done because having Option<PieceType> for just
 // a single case would be dumb.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Piece<'a> {
     // This should be either front_side or back_side.
     // May change when piece is captured
@@ -231,6 +182,20 @@ impl<'a> Piece<'a> {
         }
     }
 }
+
+impl<'a> PartialEq for Piece<'a> {
+    fn eq(&self, other: &Piece) -> bool {
+        // Compare that the *pointers* are equal, NOT the contents of the pointers
+        // This ensures that the pieces definitely belong to the same player and not just
+        // different players that happen to look like each other.
+        use std::ptr;
+        let same_player = ptr::eq(self.belongs_to, other.belongs_to);
+        let same_type = self.current_type() == other.current_type();
+        return same_player && same_type;
+    }
+}
+
+impl<'a> Eq for Piece<'a> {}
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Player<'a> {
