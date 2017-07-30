@@ -20,7 +20,6 @@ pub enum TowerHeight {
 impl Tower {
     /// Returns the top most piece and a tower that has its top piece removed
     /// Returns Err if the tower is empty
-    /// This function does not modify the original tower
     pub fn lift_piece(&self) -> Result<(Tower, Piece), &'static str> {
         use pieces::Tower::*;
         match *self {
@@ -33,7 +32,6 @@ impl Tower {
 
     /// Returns a tower that has a piece added to the topmost position on this tower
     /// Returns Err if the tower is full does not modify Tower state when this happens
-    /// This function does not modify the original tower.
     pub fn drop_piece(&self, piece: Piece) -> Result<Tower, &'static str> {
         use pieces::Tower::*;
         match *self {
@@ -101,7 +99,7 @@ impl Tower {
 pub fn initial_hand() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
-    let vec = [
+    let vec = vec![
         Commander,
         CaptainPistol,
         CaptainPistol,
@@ -125,8 +123,8 @@ pub fn initial_hand() -> Vec<PieceCombination> {
         PawnBronze,
         PawnSilver,
         PawnGold,
-    ].to_vec();
-    return vec;
+    ];
+    vec
 }
 
 /// A piece has two sides, called "Front" and "Back." Pieces initially
@@ -185,7 +183,7 @@ impl PartialEq for Piece {
     fn eq(&self, other: &Piece) -> bool {
         let same_player = self.color == other.color;
         let same_type = self.current_type() == other.current_type();
-        return same_player && same_type;
+        same_player && same_type
     }
 }
 
@@ -207,7 +205,7 @@ pub enum Color {
 impl Player {
     // Stub for the Player struct
     pub fn new_blank() -> Player {
-        return Player { hand: vec![] };
+        Player { hand: vec![] }
     }
 }
 
