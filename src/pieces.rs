@@ -1,11 +1,11 @@
 /// A tower consists of zero to three pieces. Towers may contain pieces from
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Tower<'a> {
+pub enum Tower {
     Empty,
-    Single(Piece<'a>),
-    Double(Piece<'a>, Piece<'a>),
-    Triple(Piece<'a>, Piece<'a>, Piece<'a>),
+    Single(Piece),
+    Double(Piece, Piece),
+    Triple(Piece, Piece, Piece),
 }
 
 /// A convient enum for refering to the height of a tower.
@@ -17,11 +17,10 @@ pub enum TowerHeight {
     Empty,
 }
 
-impl<'a> Tower<'a> {
+impl Tower {
     /// Returns the top most piece and a tower that has its top piece removed
     /// Returns Err if the tower is empty
-    /// This function does not modify the original tower
-    pub fn lift_piece(&self) -> Result<(Tower, Piece<'a>), &'static str> {
+    pub fn lift_piece(&self) -> Result<(Tower, Piece), &'static str> {
         use pieces::Tower::*;
         match *self {
             Empty => Err("Cannot lift a piece off an empty tower!"),
@@ -33,8 +32,7 @@ impl<'a> Tower<'a> {
 
     /// Returns a tower that has a piece added to the topmost position on this tower
     /// Returns Err if the tower is full does not modify Tower state when this happens
-    /// This function does not modify the original tower.
-    pub fn drop_piece(&self, piece: Piece<'a>) -> Result<Tower<'a>, &'static str> {
+    pub fn drop_piece(&self, piece: Piece) -> Result<Tower, &'static str> {
         use pieces::Tower::*;
         match *self {
             Empty => Ok(Single(piece)),
@@ -98,10 +96,10 @@ impl<'a> Tower<'a> {
 /// PawnBronze       x7
 /// PawnSilver       x1
 /// PawnGold         x1
-pub fn initial_hand<'a>() -> Vec<PieceCombination> {
+pub fn initial_hand() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
-    let vec = [
+    vec![
         Commander,
         CaptainPistol,
         CaptainPistol,
@@ -125,8 +123,7 @@ pub fn initial_hand<'a>() -> Vec<PieceCombination> {
         PawnBronze,
         PawnSilver,
         PawnGold,
-    ].to_vec();
-    return vec;
+    ]
 }
 
 /// A piece has two sides, called "Front" and "Back." Pieces initially
@@ -136,19 +133,17 @@ pub fn initial_hand<'a>() -> Vec<PieceCombination> {
 // for the front and back. This was done because having Option<PieceType> for just
 // a single case would be dumb.
 #[derive(Clone, Copy, Debug)]
-pub struct Piece<'a> {
+pub struct Piece {
     // This should be either front_side or back_side.
     // May change when piece is captured
     pub current_side: SideType,
     pub front_side: PieceType,
     pub back_side: PieceType,
-    // We use a pointer here because the player owns the piece, not
-    // the other way around.
-    pub belongs_to: &'a Player<'a>,
+    pub color: Color,
 }
 
-impl<'a> Piece<'a> {
-    pub fn new(piece_combination: PieceCombination, player: &'a Player) -> Piece<'a> {
+impl Piece {
+    pub fn new(piece_combination: PieceCombination, color: Color) -> Piece {
         use pieces::PieceType::*;
         use pieces::PieceCombination::*;
         let (front_side, back_side) = match piece_combination {
@@ -170,7 +165,7 @@ impl<'a> Piece<'a> {
             current_side: SideType::Front,
             front_side: front_side,
             back_side: back_side,
-            belongs_to: player,
+            color: color,
         };
     }
 
@@ -183,29 +178,33 @@ impl<'a> Piece<'a> {
     }
 }
 
-impl<'a> PartialEq for Piece<'a> {
+impl PartialEq for Piece {
     fn eq(&self, other: &Piece) -> bool {
-        // Compare that the *pointers* are equal, NOT the contents of the pointers
-        // This ensures that the pieces definitely belong to the same player and not just
-        // different players that happen to look like each other.
-        use std::ptr;
-        let same_player = ptr::eq(self.belongs_to, other.belongs_to);
+        let same_player = self.color == other.color;
         let same_type = self.current_type() == other.current_type();
-        return same_player && same_type;
+        same_player && same_type
     }
 }
 
-impl<'a> Eq for Piece<'a> {}
+impl Eq for Piece {}
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct Player<'a> {
-    pub hand: Vec<Piece<'a>>,
+pub struct Player {
+    pub hand: Vec<Piece>,
 }
 
-impl<'a> Player<'a> {
+/// The color of a piece determines which player owns the piece
+/// Note that Black always moves first
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Color {
+    Black,
+    White,
+}
+
+impl Player {
     // Stub for the Player struct
-    pub fn new_blank() -> Player<'a> {
-        return Player { hand: vec![] };
+    pub fn new_blank() -> Player {
+        Player { hand: vec![] }
     }
 }
 
