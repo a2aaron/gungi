@@ -99,7 +99,7 @@ impl Tower {
 pub fn initial_hand() -> Vec<PieceCombination> {
     use PieceCombination::*;
     // There are probably better ways of doing this but I am lazy and do not care
-    let vec = vec![
+    vec![
         Commander,
         CaptainPistol,
         CaptainPistol,
@@ -123,8 +123,7 @@ pub fn initial_hand() -> Vec<PieceCombination> {
         PawnBronze,
         PawnSilver,
         PawnGold,
-    ];
-    vec
+    ]
 }
 
 /// A piece has two sides, called "Front" and "Back." Pieces initially
