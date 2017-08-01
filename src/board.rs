@@ -28,7 +28,25 @@ fn move_piece(
     } else {
         return Err("Couldn't pop piece successfully");
     }
+}
 
+/// A Move Description indicates how a piece may move
+/// A Piece typically can move to another spot within a 5x5 area. For example,
+/// a Tier 1 Arrow may move forwards, backwards, back left and back right.
+/// Some pieces may also move like a Rook, Bishop, or Rook (only forward).
+/// Note that Move Descriptions may differ between Tiers significantly.
+/// A standard Move Description contains a Vector of tuples indicating the positions
+/// relative to the piece that it may move.
+/// For example, since the Tier 2 Bow may move forward, backwards, or
+/// up 2 spaces and left or right 2 spaces, it's move list is
+/// [(0, 1), (0, -1), (-2, 2), (2, 2)]
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum MoveDescription {
+    Normal(Vec<(i32, i32)>),
+    LikeRook(Vec<(i32, i32)>), // Applies to Hidden Dragon (Tier 1), Dragon King (Tier 1)
+    LikeBishop(Vec<(i32, i32)>), // Applies to Prodige (Tier 1), Phoenix (Tier 1),
+    LikeForward(Vec<(i32, i32)>), // Applies to Lance (Tier 1),
+                                  // and Fortress's Mobile Range Expansion Effect
 }
 
 #[cfg(test)]
