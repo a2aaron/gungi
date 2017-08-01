@@ -49,10 +49,82 @@ enum MoveDescription {
                                   // and Fortress's Mobile Range Expansion Effect
 }
 
+/// Returns true if the end coordinates can be reached by atleast one move map
+/// entry from the starting coordinates.
+fn check_move_map(
+    move_map: &Vec<(i32, i32)>,
+    start_i: usize,
+    start_j: usize,
+    end_i: usize,
+    end_j: usize,
+) -> bool {
+    for deltas in move_map {
+        let (delta_i, delta_j) = *deltas;
+        let result_i = add(start_i, delta_i);
+        let result_j = add(start_j, delta_j);
+        // I would combine these two if statements but I can't figure out how
+        // so nested ifs will have to do for now
+        if let (Ok(i), Ok(j)) = (result_i, result_j) {
+            if i == end_i && j == end_j {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+// This function attempts to add the two arguments. If the i32 is negatative
+// such that the resulting value would be negative, this funtion returns Err.
+fn add(x: usize, y: i32) -> Result<usize, &'static str> {
+    let num: i32 = x as i32 + y;
+    if num < 0 {
+        Err("Result was negative")
+    } else {
+        Ok(num as usize)
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use pieces::*;
     use board::*;
+
+    #[test]
+    fn test_usize_i32_add() {
+        assert!(add(2, 3).is_ok());
+        assert_eq!(add(2, 3).unwrap(), 5);
+        assert!(add(1, -1).is_ok());
+        assert_eq!(add(1, -1).unwrap(), 0);
+        assert!(add(5, -3).is_ok());
+        assert_eq!(add(5, -3).unwrap(), 2);
+        assert!(add(0, -1).is_err());
+        assert!(add(5, -7).is_err());
+    }
+
+    #[test]
+    fn test_check_move_map() {
+        let trival_move_map = vec![(0, 0)];
+        assert!(check_move_map(&trival_move_map, 0, 0, 0, 0));
+        assert!(check_move_map(&trival_move_map, 1, 1, 1, 1));
+        assert!(!check_move_map(&trival_move_map, 0, 0, 1, 0));
+        assert!(!check_move_map(&trival_move_map, 1, 6, 2, 7));
+
+        let simple_move_map = vec![(1, 1)];
+        assert!(check_move_map(&simple_move_map, 0, 0, 1, 1));
+        assert!(check_move_map(&simple_move_map, 3, 4, 4, 5));
+        assert!(!check_move_map(&simple_move_map, 3, 1, 4, 5));
+        assert!(!check_move_map(&simple_move_map, 8, 8, 7, 7));
+
+        let bow_move_map = vec![(0, 1), (0, -1), (-2, 2), (2, 2)];
+        assert!(check_move_map(&bow_move_map, 5, 5, 5, 6));
+        assert!(check_move_map(&bow_move_map, 5, 5, 5, 4));
+        assert!(check_move_map(&bow_move_map, 5, 5, 3, 7));
+        assert!(check_move_map(&bow_move_map, 5, 5, 7, 7));
+        assert!(!check_move_map(&bow_move_map, 5, 5, 6, 6));
+        assert!(!check_move_map(&bow_move_map, 5, 5, 5, 5));
+    }
 
     #[test]
     fn test_move_piece_succeeds() {
