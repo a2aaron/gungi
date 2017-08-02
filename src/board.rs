@@ -51,8 +51,8 @@ enum MoveDescription {
 
 /// Returns true if the end coordinates can be reached by atleast one move map
 /// entry from the starting coordinates.
-fn check_move_map(
     move_map: &Vec<(i32, i32)>,
+pub fn check_move_map(
     start_i: usize,
     start_j: usize,
     end_i: usize,
