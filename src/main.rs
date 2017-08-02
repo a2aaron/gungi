@@ -7,15 +7,33 @@
 
 mod tests;
 mod pieces;
+mod board;
 
-use std::iter::Map;
 use pieces::*;
+use board::*;
 
 fn main() {
-    println!("Hello World!");
-    let mut board: [[Option<Piece>; 9]; 9] = [[None; 9]; 9];
-
-    let player1 = &Player::new_blank() as *const Player;
-    let player2 = &Player::new_blank() as *const Player;
-    println!("{}", player1 == player2);
+    let special = MoveSpecial::Forward(Color::Black);
+    let bow_map = vec![(0, 1), (0, -1), (-2, 2), (2, 2)];
+    let (mut start_i, mut start_j) = (0, 0);
+    loop {
+        println!("WHITE SIDE");
+        for j in (0..9).rev() {
+            // Want 0th row to be at the bottom
+            for i in 0..9 {
+                if start_i == i && start_j == j {
+                    print!("o");
+                } else if board::check_move_special(special, start_i, start_j, i, j) {
+                    // board::check_move_map(&bow_map, start_i, start_j, i, j) {
+                    print!("Y");
+                } else {
+                    print!(" ");
+                }
+            }
+            println!("");
+        }
+        println!("BLACK SIDE");
+        start_i = (start_i + 1) % 9;
+        start_j = (start_j + 1) % 9;
+    }
 }
