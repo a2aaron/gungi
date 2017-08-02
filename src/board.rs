@@ -2,7 +2,6 @@
 
 use pieces::*;
 
-
 /// Returns the board but with the top piece moved to the goal location.
 /// Returns Err if the initial tower selected is empty (and thus cannot pop)
 fn move_piece(
@@ -30,7 +29,7 @@ fn move_piece(
     }
 }
 
-/// A Move Description indicates how a piece may move
+/// A Move Map indicates how a piece may move.
 /// A Piece typically can move to another spot within a 5x5 area. For example,
 /// a Tier 1 Arrow may move forwards, backwards, back left and back right.
 /// Some pieces may also move like a Rook, Bishop, or Rook (only forward).
@@ -40,19 +39,32 @@ fn move_piece(
 /// For example, since the Tier 2 Bow may move forward, backwards, or
 /// up 2 spaces and left or right 2 spaces, it's move list is
 /// [(0, 1), (0, -1), (-2, 2), (2, 2)]
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum MoveDescription {
-    Normal(Vec<(i32, i32)>),
-    LikeRook(Vec<(i32, i32)>), // Applies to Hidden Dragon (Tier 1), Dragon King (Tier 1)
-    LikeBishop(Vec<(i32, i32)>), // Applies to Prodige (Tier 1), Phoenix (Tier 1),
-    LikeForward(Vec<(i32, i32)>), // Applies to Lance (Tier 1),
-                                  // and Fortress's Mobile Range Expansion Effect
+type MoveMap = Vec<(i32, i32)>;
+
+/// Some pieces may also move in a special way, such as like a Rook or Bishop
+/// For example, Hidden Dragon (Tier 1) and Dragon King (Tier 1) move like Rooks,
+/// Prodigy (Tier 1) and Phoenix (Tier 1) move like bishops
+/// and the Lance (Tier 1) can move forward like a Rook. The Fortress's Mobile
+/// Range Expansion Effect also applies to all pieces in front of it (like a Rook)
+/// Note that a piece with the `Forward` variant always moves towards the enemy player.
+/// For example, if Black has the 0th row and White has the 8th row then Forward
+/// would let a Black piece move towards the 8th row and a White piece towards the 0th
+/// row.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum MoveSpecial {
+    Normal,
+    Rook,
+    Bishop,
+    Forward(Color),
+}
+
+}
 }
 
 /// Returns true if the end coordinates can be reached by atleast one move map
 /// entry from the starting coordinates.
-    move_map: &Vec<(i32, i32)>,
 pub fn check_move_map(
+    move_map: &MoveMap,
     start_i: usize,
     start_j: usize,
     end_i: usize,
