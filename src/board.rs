@@ -58,7 +58,36 @@ pub enum MoveSpecial {
     Forward(Color),
 }
 
+/// Returns true if the end coordinates can be reached by the start coordinates.
+/// Note: Always returns false if MoveSpecial::Normal.
+pub fn check_move_special(
+    move_special: MoveSpecial,
+    start_i: usize,
+    start_j: usize,
+    end_i: usize,
+    end_j: usize,
+) -> bool {
+    use board::MoveSpecial::*;
+    match move_special {
+        // No special move, so false by default
+        Normal => false,
+        // Same file or rank
+        Rook => start_i == end_i || start_j == end_j,
+        // Move equally vertically and horizontally
+        Bishop => abs_diff(start_i, end_i) == abs_diff(start_j, end_j),
+        // For consistency, we will say that Black's side is at row 0
+        // while White's side is at row 8
+        Forward(color) => {
+            match color {
+                Color::Black => start_i == end_i && start_j < end_j,
+                Color::White => start_i == end_i && start_j > end_j,
+            }
+        }
+    }
 }
+
+fn abs_diff(x: usize, y: usize) -> usize {
+    if x > y { x - y } else { y - x }
 }
 
 /// Returns true if the end coordinates can be reached by atleast one move map
@@ -102,6 +131,69 @@ fn add(x: usize, y: i32) -> Result<usize, &'static str> {
 mod tests {
     use pieces::*;
     use board::*;
+
+    #[test]
+    fn test_move_special() {
+        use board::MoveSpecial::*;
+        // Normal variant always false.
+        assert!(!check_move_special(Normal, 0, 0, 0, 0));
+        assert!(!check_move_special(Normal, 0, 1, 0, 0));
+        assert!(!check_move_special(Normal, 6, 2, 3, 5));
+        assert!(!check_move_special(Normal, 1, 0, 2, 3));
+        assert!(!check_move_special(Normal, 1, 3, 5, 7));
+
+        assert!(check_move_special(Rook, 5, 3, 5, 4));
+        assert!(check_move_special(Rook, 5, 3, 5, 1));
+        assert!(check_move_special(Rook, 5, 3, 5, 2));
+
+        assert!(check_move_special(Rook, 5, 3, 2, 3));
+        assert!(check_move_special(Rook, 5, 3, 5, 3));
+        assert!(check_move_special(Rook, 5, 3, 7, 3));
+
+        assert!(!check_move_special(Rook, 5, 3, 2, 0));
+        assert!(!check_move_special(Rook, 5, 3, 7, 4));
+        assert!(!check_move_special(Rook, 5, 3, 6, 2));
+
+        assert!(check_move_special(Bishop, 5, 5, 6, 6));
+        assert!(check_move_special(Bishop, 5, 5, 7, 7));
+        assert!(check_move_special(Bishop, 5, 5, 5, 5));
+        assert!(check_move_special(Bishop, 5, 5, 4, 4));
+        assert!(check_move_special(Bishop, 5, 5, 6, 4));
+        assert!(check_move_special(Bishop, 5, 5, 7, 3));
+        assert!(check_move_special(Bishop, 5, 5, 4, 6));
+        assert!(check_move_special(Bishop, 5, 5, 3, 7));
+
+        assert!(!check_move_special(Bishop, 5, 5, 6, 5));
+        assert!(!check_move_special(Bishop, 5, 5, 7, 6));
+        assert!(!check_move_special(Bishop, 5, 5, 2, 3));
+
+        assert!(check_move_special(Forward(Color::Black), 1, 0, 1, 1));
+        assert!(check_move_special(Forward(Color::Black), 1, 0, 1, 7));
+        assert!(check_move_special(Forward(Color::Black), 1, 2, 1, 5));
+        assert!(!check_move_special(Forward(Color::Black), 0, 5, 1, 5));
+
+        assert!(check_move_special(Forward(Color::White), 0, 8, 0, 7));
+        assert!(check_move_special(Forward(Color::White), 0, 8, 0, 5));
+        assert!(check_move_special(Forward(Color::White), 0, 6, 0, 3));
+
+        assert!(
+            !check_move_special(Forward(Color::Black), 0, 5, 0, 2),
+            "Can't move backwards when black!"
+        );
+        assert!(
+            !check_move_special(Forward(Color::White), 0, 5, 0, 7),
+            "Can't move forwards when white!"
+        );
+    }
+
+    #[test]
+    fn test_abs_diff() {
+        assert_eq!(abs_diff(5, 5), 0);
+        assert_eq!(abs_diff(0, 0), 0);
+        assert_eq!(abs_diff(0, 1), 1);
+        assert_eq!(abs_diff(7, 10), 3);
+        assert_eq!(abs_diff(7, 10), abs_diff(10, 7));
+    }
 
     #[test]
     fn test_usize_i32_add() {
