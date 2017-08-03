@@ -39,7 +39,7 @@ fn move_piece(
 /// For example, since the Tier 2 Bow may move forward, backwards, or
 /// up 2 spaces and left or right 2 spaces, it's move list is
 /// [(0, 1), (0, -1), (-2, 2), (2, 2)]
-type MoveMap = Vec<(i32, i32)>;
+pub type MoveMap = Vec<(i32, i32)>;
 
 /// Some pieces may also move in a special way, such as like a Rook or Bishop
 /// For example, Hidden Dragon (Tier 1) and Dragon King (Tier 1) move like Rooks,
