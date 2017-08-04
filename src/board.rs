@@ -115,6 +115,38 @@ pub fn check_move_map(
     false
 }
 
+/// A Tier refers to the location that a Piece is in a Tower. Tier One pieces are
+/// at the bottom, Tier Two are in the middle, and Tier Three pieces are at the
+/// top. Pieces with the same PieceType but different Tiers move in different ways.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Tier {
+    One,
+    Two,
+    Three,
+}
+
+/// Returns the MoveSpecial that a PieceType has. Note that `color` is only relevant
+/// if the PieceType is a Lance (Tier 1) as the direction the Lance moves depends
+/// on its color. All Tier 2 and Tier 3 pieces move normally.
+/// only Hidden Dragon and Dragon King(both Tier 1) move as Rook,
+/// and only Prodigy and Pheonix (both Tier 1) move as Bishop.
+pub fn get_move_special(piece_type: PieceType, color: Color, tier: Tier) -> MoveSpecial {
+    use MoveSpecial::*;
+    use PieceType::*;
+    match tier {
+        Tier::One => {
+            match piece_type {
+                HiddenDragon | DragonKing => Rook,
+                Prodigy | Phoenix => Bishop,
+                Lance => Forward(color),
+                _ => Normal,
+            }
+        }
+        _ => Normal,
+    }
+}
+
+
 // This function attempts to add the two arguments. If the i32 is negatative
 // such that the resulting value would be negative, this funtion returns Err.
 fn add(x: usize, y: i32) -> Result<usize, &'static str> {
@@ -131,6 +163,33 @@ fn add(x: usize, y: i32) -> Result<usize, &'static str> {
 mod tests {
     use pieces::*;
     use board::*;
+
+    #[test]
+    fn test_get_move_special() {
+        use board::MoveSpecial::*;
+        use pieces::PieceType::*;
+        assert_eq!(
+            get_move_special(HiddenDragon, Color::Black, Tier::One),
+            Rook
+        );
+        assert_eq!(get_move_special(DragonKing, Color::Black, Tier::One), Rook);
+        assert_eq!(get_move_special(Prodigy, Color::Black, Tier::One), Bishop);
+        assert_eq!(get_move_special(Phoenix, Color::Black, Tier::One), Bishop);
+
+        assert_eq!(
+            get_move_special(HiddenDragon, Color::Black, Tier::Two),
+            Normal
+        );
+
+        assert_eq!(
+            get_move_special(Lance, Color::Black, Tier::One),
+            Forward(Color::Black)
+        );
+        assert_eq!(
+            get_move_special(Lance, Color::White, Tier::One),
+            Forward(Color::White)
+        );
+    }
 
     #[test]
     fn test_move_special() {
