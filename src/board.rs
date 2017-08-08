@@ -115,6 +115,11 @@ pub fn check_move_map(
     false
 }
 
+// Used to flip MoveMaps for white side.
+fn vertical_flip(move_map: &MoveMap) -> MoveMap {
+    return move_map.iter().map(|x| (x.0, x.1 * -1)).collect();
+}
+
 /// A Tier refers to the location that a Piece is in a Tower. Tier One pieces are
 /// at the bottom, Tier Two are in the middle, and Tier Three pieces are at the
 /// top. Pieces with the same PieceType but different Tiers move in different ways.
@@ -287,6 +292,14 @@ mod tests {
         assert!(check_move_map(&bow_move_map, 5, 5, 7, 7));
         assert!(!check_move_map(&bow_move_map, 5, 5, 6, 6));
         assert!(!check_move_map(&bow_move_map, 5, 5, 5, 5));
+    }
+
+    #[test]
+    fn test_vertical_flip() {
+        let move_map = vec![(0, 0), (0, 1), (0, -1), (-2, 2), (2, 2)];
+        let flipped_map = vec![(0, 0), (0, -1), (0, 1), (-2, -2), (2, -2)];
+        assert_eq!(vertical_flip(&move_map), flipped_map);
+        assert_eq!(vertical_flip(&flipped_map), move_map);
     }
 
     #[test]
