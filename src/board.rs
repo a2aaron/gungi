@@ -1,6 +1,27 @@
-// A board is a [[Tower; 9]; 9]
-
 use pieces::*;
+
+/// This file describes how a the board should work in Gungi.
+/// A Gungi board is a 9x9 board, similar to a Shogi board.
+/// For the purposes of this file, we will define the board positions in terms
+/// of (x, y) coordinates, with (0, 0) located at the *bottom left* corner.
+/// Black is at (0, _) while white is at (8, _).
+/// Visualized below:
+/// WHITE SIDE
+/// 8#########
+/// 7#########
+/// 6#########
+/// 5#########
+/// 4#########
+/// 3#########
+/// 2#########
+/// 1#########
+/// 0#########
+///  012345678
+/// BLACK SIDE
+/// Note that this essentially means that the board resides in quadrant 1
+/// of a Cartesian plane.
+/// Note that, for our purposes, we are using a [[Tower; 9] 9] to represent
+/// a board.
 
 /// Returns the board but with the top piece moved to the goal location.
 /// Returns Err if the initial tower selected is empty (and thus cannot pop)
@@ -39,6 +60,10 @@ fn move_piece(
 /// For example, since the Tier 2 Bow may move forward, backwards, or
 /// up 2 spaces and left or right 2 spaces, it's move list is
 /// [(0, 1), (0, -1), (-2, 2), (2, 2)]
+/// Visualized below. P indicates the T2 Bow, # indicates a square the piece
+/// move to, and - indicates a non-reachable square.
+/// IMPORTANT: These move maps are all described for pieces belonging to Black!
+///
 pub type MoveMap = Vec<(i32, i32)>;
 
 /// Some pieces may also move in a special way, such as like a Rook or Bishop
