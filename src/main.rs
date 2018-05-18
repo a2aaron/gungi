@@ -5,11 +5,11 @@
 // GUNGI RULES
 // https://mmmmalo.tumblr.com/post/74510568781/rules-of-gungi
 
-mod tests;
 mod pieces;
+mod tests;
 
-use std::iter::Map;
 use pieces::*;
+use std::iter::Map;
 
 fn main() {
     println!("Hello World!");

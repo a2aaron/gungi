@@ -144,8 +144,8 @@ pub struct Piece {
 
 impl Piece {
     pub fn new(piece_combination: PieceCombination, color: Color) -> Piece {
-        use pieces::PieceType::*;
         use pieces::PieceCombination::*;
+        use pieces::PieceType::*;
         let (front_side, back_side) = match piece_combination {
             PieceCombination::Commander => (PieceType::Commander, PieceType::Commander),
             CaptainPistol => (Captain, Pistol),
