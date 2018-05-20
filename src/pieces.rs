@@ -1,3 +1,6 @@
+use std::fmt;
+
+
 /// A tower consists of zero to three pieces. Towers may contain pieces from
 /// both players. Only the top piece on a tower can move.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -59,6 +62,18 @@ impl Tower {
             Double(bottom, middle) => bottom != middle,
             // Same idea for towers of three but it applies to all piece combinations
             Triple(bottom, middle, top) => !(bottom == middle || bottom == top || middle == top),
+        }
+    }
+}
+
+impl fmt::Display for Tower {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use pieces::Tower::*;
+        match *self {
+            Empty => write!(f, "[]"),
+            Single(piece) => write!(f, "[{}]", piece),
+            Double(bottom, mid) => write!(f, "[{}, {}]", bottom, mid),
+            Triple(bottom, mid, top) => write!(f, "[{}, {}, {}]", bottom, mid, top),
         }
     }
 }
@@ -169,6 +184,15 @@ impl PartialEq for Piece {
 
 impl Eq for Piece {}
 
+impl fmt::Display for Piece {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.current_side {
+            SideType::Front => write!(f, "{} {} ({})", self.color, self.front_side, self.back_side),
+            SideType::Back => write!(f, "{} {} ({})", self.color, self.back_side, self.front_side),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct Player {
     pub hand: Vec<Piece>,
@@ -180,6 +204,15 @@ pub struct Player {
 pub enum Color {
     Black,
     White,
+}
+
+impl fmt::Display for Color {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Color::Black => write!(f, "Black"),
+            Color::White => write!(f, "White"),
+        }
+    }
 }
 
 impl Player {
@@ -271,4 +304,32 @@ pub enum PieceType {
     Bronze,
     Silver,
     Gold,
+}
+
+impl<'a> fmt::Display for PieceType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use pieces::PieceType::*;
+        match *self {
+            Commander => write!(f, "Commander"),
+            Captain => write!(f, "Captain"),
+            Samurai => write!(f, "Samurai"),
+            Spy => write!(f, "Spy"),
+            Catapult => write!(f, "Catapult"),
+            Fortress => write!(f, "Fortress"),
+            HiddenDragon => write!(f, "Hidden Dragon"),
+            Prodigy => write!(f, "Prodigy"),
+            Bow => write!(f, "Bow"),
+            Pawn => write!(f, "Pawn"),
+            Pistol => write!(f, "Pistol"),
+            Pike => write!(f, "Pike"),
+            Clandestinite => write!(f, "Clandestinite"),
+            Lance => write!(f, "Lance"),
+            DragonKing => write!(f, "Dragon King"),
+            Phoenix => write!(f, "Phoenix"),
+            Arrow => write!(f, "Arrow"),
+            Bronze => write!(f, "Bronze"),
+            Silver => write!(f, "Silver"),
+            Gold => write!(f, "Gold"),
+        }
+    }
 }

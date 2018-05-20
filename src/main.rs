@@ -12,10 +12,14 @@ use pieces::*;
 use std::iter::Map;
 
 fn main() {
-    println!("Hello World!");
-    let mut board: [[Option<Piece>; 9]; 9] = [[None; 9]; 9];
+    let player = Color::Black;
+    let piece_bottom = Piece::new(PieceCombination::PawnBronze, player);
+    let piece_middle = Piece::new(PieceCombination::BowArrow, player);
+    let piece_top = Piece::new(PieceCombination::PawnSilver, player);
 
-    let player1 = &Player::new_blank() as *const Player;
-    let player2 = &Player::new_blank() as *const Player;
-    println!("{}", player1 == player2);
+    let tower = Tower::Triple(piece_bottom, piece_middle, piece_top);
+    println!("{}", piece_top);
+    println!("{}", piece_middle);
+    println!("{}", piece_bottom);
+    println!("{}", tower);
 }
