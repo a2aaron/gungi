@@ -132,26 +132,6 @@ mod tests {
     }
 
     #[test]
-    fn test_height() {
-        let player = Color::Black;
-        let piece_1 = Piece::new(PieceCombination::PawnGold, player);
-        let piece_2 = Piece::new(PieceCombination::BowArrow, player);
-        let piece_3 = Piece::new(PieceCombination::ProdigyPhoenix, player);
-
-        let empty = Tower::Empty;
-        assert_eq!(empty.height(), TowerHeight::Empty);
-
-        let bottom = Tower::Single(piece_1);
-        assert_eq!(bottom.height(), TowerHeight::Bottom);
-
-        let middle = Tower::Double(piece_1, piece_2);
-        assert_eq!(middle.height(), TowerHeight::Middle);
-
-        let top = Tower::Triple(piece_1, piece_2, piece_3);
-        assert_eq!(top.height(), TowerHeight::Top);
-    }
-
-    #[test]
     fn test_lift_piece() {
         let player = Color::Black;
         let piece_bottom = Piece::new(PieceCombination::PawnGold, player);
@@ -162,15 +142,15 @@ mod tests {
 
         let (tower, piece_top_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_top_lift_piece, piece_top);
-        assert_eq!(tower.height(), TowerHeight::Middle);
+        assert_eq!(tower, Tower::Double(piece_bottom, piece_middle));
 
         let (tower, piece_middle_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_middle_lift_piece, piece_middle);
-        assert_eq!(tower.height(), TowerHeight::Bottom);
+        assert_eq!(tower, Tower::Single(piece_bottom));
 
         let (tower, piece_bottom_lift_piece) = tower.lift_piece().unwrap();
         assert_eq!(piece_bottom_lift_piece, piece_bottom);
-        assert_eq!(tower.height(), TowerHeight::Empty);
+        assert_eq!(tower, Tower::Empty);
 
         let empty = Tower::Empty;
         assert!(empty.lift_piece().is_err());
@@ -178,7 +158,6 @@ mod tests {
 
     #[test]
     fn test_drop() {
-        use pieces::TowerHeight::*;
         let player = Color::Black;
         let piece_bottom = Piece::new(PieceCombination::PawnGold, player);
         let piece_middle = Piece::new(PieceCombination::BowArrow, player);
@@ -187,15 +166,12 @@ mod tests {
         let mut tower = Tower::Empty;
 
         tower = tower.drop_piece(piece_bottom).unwrap();
-        assert_eq!(tower.height(), Bottom);
         assert_eq!(tower, Tower::Single(piece_bottom));
 
         tower = tower.drop_piece(piece_middle).unwrap();
-        assert_eq!(tower.height(), Middle);
         assert_eq!(tower, Tower::Double(piece_bottom, piece_middle));
 
         tower = tower.drop_piece(piece_top).unwrap();
-        assert_eq!(tower.height(), Top);
         assert_eq!(tower, Tower::Triple(piece_bottom, piece_middle, piece_top));
 
         let piece = Piece::new(PieceCombination::Commander, player);

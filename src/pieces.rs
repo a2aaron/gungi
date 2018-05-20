@@ -8,15 +8,6 @@ pub enum Tower {
     Triple(Piece, Piece, Piece),
 }
 
-/// A convient enum for refering to the height of a tower.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TowerHeight {
-    Top,
-    Middle,
-    Bottom,
-    Empty,
-}
-
 impl Tower {
     /// Returns the top most piece and a tower that has its top piece removed
     /// Returns Err if the tower is empty
@@ -39,16 +30,6 @@ impl Tower {
             Single(bottom) => Ok(Double(bottom, piece)),
             Double(bottom, middle) => Ok(Triple(bottom, middle, piece)),
             Triple(_, _, _) => Err("Tower is full."),
-        }
-    }
-
-    pub fn height(&self) -> TowerHeight {
-        use pieces::Tower::*;
-        match *self {
-            Empty => TowerHeight::Empty,
-            Single(_) => TowerHeight::Bottom,
-            Double(_, _) => TowerHeight::Middle,
-            Triple(_, _, _) => TowerHeight::Top,
         }
     }
 
